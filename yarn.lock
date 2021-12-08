@@ -3950,6 +3950,11 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
+dotenv-save@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv-save/-/dotenv-save-1.2.0.tgz#22fd2251e7c9543c92b9fd682c80fd5fdf574535"
+  integrity sha1-Iv0iUefJVDySuf1oLID9X99XRTU=
+
 duplexer3@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer3/-/duplexer3-0.1.4.tgz#ee01dd1cac0ed3cbc7fdbea37dc0a8f1ce002ce2"
