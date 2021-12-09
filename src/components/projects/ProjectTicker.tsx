@@ -5,7 +5,7 @@ import style from './style.css';
 
 const tickerConfig = {
 	speed: 0.6, // automatic scrolling speed
-	margin: innerWidth * 2, // overlapping distance form both sides of the screen
+	marginFactor: 2, // overlapping distance factor for both sides of the screen
 	marginMin: 600, // minimum overlapping distance for mobile
 	avgProjectWidth: 200, // average width of a signle project node
 };
@@ -44,7 +44,10 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects }) =>
 
 		// create as many containers as there is horizontal space for
 		let currentWidth = 0;
-		while (currentWidth < window.innerWidth + tickerConfig.margin * 2) {
+		while (
+			currentWidth <
+			window.innerWidth + window.innerWidth * tickerConfig.marginFactor * 2
+		) {
 			currentWidth += avgWidth;
 			containers.push(
 				<div class={style.projectContainer}>
@@ -67,7 +70,10 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects }) =>
 
 	const tickerMove = useCallback(() => {
 		setScrollPos((curr) => {
-			if (width.current.wrapper - curr + width.current.ticker / 2 < tickerConfig.margin) {
+			if (
+				width.current.wrapper - curr + width.current.ticker / 2 <
+				tickerConfig.marginFactor * window.innerWidth
+			) {
 				appendContainer();
 				return curr - width.current.container;
 			}

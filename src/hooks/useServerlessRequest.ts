@@ -18,18 +18,20 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
         isLoading: true,
     });
 
-    const cache = useCache('sl_cache__' + functionName, {
-        ttl: 1000 * 60 * 60 * 60 * 24,
+    // cache serverless function response for 10 days by default
+    const cache = useCache<T>('slf_cache__' + functionName, {
+        ttl: 1000 * 60 * 60 * 60 * 24 * 10,
     });
 
-    const sendRequest = async (url: string) => {
+    const sendRequest = async () => {
+        const url = `${window.location.href}.netlify/functions/${functionName}`;
         const response = await fetch(url, opts?.fetchOptions);
         const json = await response.json();
         return json;
     };
 
     const checkCache = useCallback(() => {
-        const cachedData = cache.get<T>();
+        const cachedData = cache.get();
         if (cachedData) {
             setData({
                 isLoading: false,
@@ -39,14 +41,15 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
         }
 
         console.debug('Updating cache for ' + functionName);
-        sendRequest(`${window.location.href}.netlify/functions/${functionName}`)
+
+        sendRequest()
             .then(data => {
                 setData({
                     isLoading: false,
                     data,
                 });
 
-                cache.set<T>(data);
+                cache.set(data);
             }).catch(error => {
                 console.error(error);
             });

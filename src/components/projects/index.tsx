@@ -7,7 +7,7 @@ import style from './style.css';
 const Projects: FunctionalComponent = () => {
 	const response = useServerlessRequest<Project[]>('getProjects');
 
-	console.log(response.data);
+	console.log(response);
 
 	return (
 		<div class={style.projects}>

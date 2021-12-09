@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'preact/hooks';
+import { useCallback } from 'preact/hooks';
 
 interface CachedElement<T> {
     timestamp: number;
@@ -6,33 +6,37 @@ interface CachedElement<T> {
 }
 
 interface CacheOptions {
-    ttl?: number;
+    ttl?: number; // cache lifetime in ms
 }
 
+// use localhost as cache for single value of type T
 const useCache = <T>(key: string, opts?: CacheOptions) => {
-
-    const get = useCallback(<T>(): T | null => {
+    const get = useCallback((): T | null => {
         const item = localStorage.getItem(key);
         if (item) {
-            const cachedElement = JSON.parse(item);
-            const age = Date.now() - cachedElement.timestamp;
-            console.debug(`Cache age: ${age / 1000}s`);
-            if (cachedElement.timestamp + (opts?.ttl || 0) < Date.now()) {
-                console.debug('Cache expired');
-                localStorage.removeItem(key);
-                return null;
+            const cacheValue = JSON.parse(item);
+            const cacheAge = Date.now() - cacheValue.timestamp;
+            console.debug(`Cache age: ${cacheAge / 1000}s`);
+
+            if ((opts?.ttl || 0) > cacheAge) {
+                // return cached value
+                return cacheValue.data;
             }
-            return cachedElement.data;
+
+            // cache expired, remove it
+            console.debug('Cache expired');
+            localStorage.removeItem(key);
         }
 
         return null;
     }, [key, opts]);
 
-    const set = useCallback(<T>(data: T) => {
+    const set = useCallback((data: T) => {
         const cached: CachedElement<T> = {
             timestamp: Date.now(),
             data,
         }
+
         localStorage.setItem(key, JSON.stringify(cached));
     }, [key]);
 
