@@ -1,4 +1,4 @@
-import { h } from 'preact';
+import { h, FunctionalComponent } from 'preact';
 import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
 import ProjectItem from './ProjectItem';
 import style from './style.css';
@@ -6,6 +6,8 @@ import style from './style.css';
 const tickerConfig = {
 	speed: 0.6, // automatic scrolling speed
 	margin: innerWidth * 2, // overlapping distance form both sides of the screen
+	marginMin: 600, // minimum overlapping distance for mobile
+	avgProjectWidth: 200, // average width of a signle project node
 };
 
 export interface Project {
@@ -23,21 +25,25 @@ type ProjectTickerProps = {
 	projects: Project[];
 };
 
-const ProjectTicker = ({ projects }: ProjectTickerProps) => {
+const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects }) => {
 	const ticker = useRef<HTMLDivElement>(null);
-	const container = useRef<HTMLDivElement>(null);
-	const [scrollPos, setScrollPos] = useState(0);
+	const wrapper = useRef<HTMLDivElement>(null);
 	const width = useRef({
 		ticker: 0,
 		wrapper: 0,
 		container: 0,
 	});
 
-	const createProjectContainers = useCallback(() => {
-		const avgWidth = projects.length * 200;
-		const containers: any = [];
-		let currentWidth = 0;
+	const [scrollPos, setScrollPos] = useState(0);
 
+	const createProjectContainers = useCallback(() => {
+		// approximate the width of a single container by using the average width of a project
+		// this is necessary because the width of the container is not known until the projects are rendered
+		const avgWidth = projects.length * tickerConfig.avgProjectWidth;
+		const containers: any = [];
+
+		// create as many containers as there is horizontal space for
+		let currentWidth = 0;
 		while (currentWidth < window.innerWidth + tickerConfig.margin * 2) {
 			currentWidth += avgWidth;
 			containers.push(
@@ -52,11 +58,12 @@ const ProjectTicker = ({ projects }: ProjectTickerProps) => {
 		return containers;
 	}, [projects]);
 
+	// moves first container all the way to the right as the new trailing container
+	// this container recycling is done to prevent the browser from creating new DOM nodes
 	const appendContainer = useCallback(() => {
-		if (!container.current) return;
-		const firstContainer = container.current.removeChild(container.current.firstChild!);
-		container.current.appendChild(firstContainer);
-	}, [container]);
+		const firstContainer = wrapper.current?.removeChild(wrapper.current?.firstChild!);
+		if (firstContainer) wrapper.current?.appendChild(firstContainer);
+	}, [wrapper]);
 
 	const tickerMove = useCallback(() => {
 		setScrollPos((curr) => {
@@ -71,24 +78,25 @@ const ProjectTicker = ({ projects }: ProjectTickerProps) => {
 	}, [width]);
 
 	useEffect(() => {
+		// center the ticker in the viewport each time a width changes
 		setScrollPos(width.current.wrapper / 2 - width.current.ticker / 2);
 	}, [width]);
 
 	useEffect(() => {
-		if (!container.current || !ticker.current) return;
+		if (!wrapper.current || !ticker.current) return;
 		width.current = {
 			ticker: ticker.current.clientWidth,
-			wrapper: container.current.clientWidth,
-			container: container.current.firstElementChild!.clientWidth,
+			wrapper: wrapper.current.clientWidth,
+			container: wrapper.current.firstElementChild!.clientWidth,
 		};
 
 		requestAnimationFrame(tickerMove);
-	}, [ticker, container]);
+	}, [ticker, wrapper]);
 
 	return (
 		<div class={style.projectTicker} ref={ticker}>
 			<div
-				ref={container}
+				ref={wrapper}
 				class={style.projectContainerWrapper}
 				style={`transform: translateX(${scrollPos * -1}px)`}
 			>
