@@ -9,7 +9,7 @@ const App: FunctionalComponent = () => {
 		<div id="app">
 			<Header />
 			<Content />
-			<ProjectScroller />
+			{/* <ProjectScroller /> */}
 			<Footer />
 		</div>
 	);

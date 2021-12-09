@@ -6,8 +6,6 @@ import style from './style.css';
 const ProjectScroller: FunctionalComponent = () => {
 	const repos = useGithubRepos(process.env.GITHUB_USER!, process.env.GITHUB_TOKEN!);
 
-	console.log(repos);
-
 	return (
 		<div class={style.scroller}>
 			Projects
