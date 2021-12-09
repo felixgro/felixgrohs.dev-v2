@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"name": "test",
+	"name": "felixgrohs.dev",
 	"version": "0.0.0",
 	"license": "MIT",
 	"scripts": {
@@ -16,6 +16,7 @@
 		"preact-router": "^3.2.1"
 	},
 	"devDependencies": {
+		"@netlify/functions": "^0.10.0",
 		"@types/enzyme": "^3.10.5",
 		"@types/jest": "^26.0.8",
 		"@typescript-eslint/eslint-plugin": "^2.25.0",

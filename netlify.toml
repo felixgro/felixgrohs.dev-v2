@@ -1,0 +1,11 @@
+[build]
+    publish = "build"
+
+[functions]
+    directory = "functions"
+
+[dev]
+    command = "yarn dev"
+    publish = "src"
+    targetPort = 8080
+    framework = "#custom"

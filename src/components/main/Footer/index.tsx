@@ -3,7 +3,7 @@ import { FunctionalComponent, h } from 'preact';
 const Footer: FunctionalComponent = () => {
 	return (
 		<footer>
-			<a href="mailto:me@felixgrohs.dev">me@felixgrohs.dev</a>
+			<small>felixgrohs.dev</small>
 		</footer>
 	);
 };
