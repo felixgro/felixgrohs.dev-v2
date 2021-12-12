@@ -60,7 +60,12 @@
 	position: absolute;
 	padding: 14px 34px;
 	width: 500px;
+	height: auto;
 	bottom: 100%;
 	margin-bottom: 30px;
 	background: #ccc;
 }
+
+/* .dialog > * {
+	opacity: 0;
+} */
