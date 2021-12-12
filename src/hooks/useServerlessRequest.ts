@@ -20,7 +20,7 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
 
     // cache serverless function response for 10 days by default
     const cache = useCache<T>('slf_cache__' + functionName, {
-        ttl: 1000 * 60 * 60 * 60 * 24 * 10,
+        ttl: 1000 * 60 * 60 * 24 * 10
     });
 
     const sendRequest = async () => {

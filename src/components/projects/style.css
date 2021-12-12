@@ -1,3 +1,9 @@
+.projectWrapper {
+	position: relative;
+	display: flex;
+	justify-content: center;
+}
+
 .projects {
 	position: relative;
 	display: flex;
@@ -31,8 +37,30 @@
 
 .project {
 	white-space: nowrap;
-	padding: 6px 12px;
+	padding: 8px 16px;
+	font-size: 1rem;
 	margin: 2px 5px;
 	border-radius: 100px;
 	background: #eee;
+	cursor: pointer;
+}
+
+.debugPanel {
+	position: absolute;
+	z-index: 10000;
+	bottom: 0;
+	right: 0;
+	color: #ccc;
+	background: #000;
+	padding: 2px 6px;
+	font-size: 0.6rem;
+}
+
+.dialog {
+	position: absolute;
+	padding: 14px 34px;
+	width: 500px;
+	bottom: 100%;
+	margin-bottom: 30px;
+	background: #ccc;
 }

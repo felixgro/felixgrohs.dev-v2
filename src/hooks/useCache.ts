@@ -16,7 +16,7 @@ const useCache = <T>(key: string, opts?: CacheOptions) => {
         if (item) {
             const cacheValue = JSON.parse(item);
             const cacheAge = Date.now() - cacheValue.timestamp;
-            console.debug(`Cache age: ${cacheAge / 1000}s`);
+            // console.debug(`Cache age: ${cacheAge / 1000}s`);
 
             if ((opts?.ttl || 0) > cacheAge) {
                 // return cached value
@@ -24,7 +24,7 @@ const useCache = <T>(key: string, opts?: CacheOptions) => {
             }
 
             // cache expired, remove it
-            console.debug('Cache expired');
+            // console.debug('Cache expired');
             localStorage.removeItem(key);
         }
 
