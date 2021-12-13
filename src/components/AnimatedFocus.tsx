@@ -57,20 +57,27 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 				return;
 			}
 
-			indicatorRef.current?.animate(
-				[
+			indicatorRef.current
+				?.animate(
+					[
+						{
+							height: `${height}px`,
+							width: `${width}px`,
+							transform: `translate(${x}px, ${y}px)`,
+						},
+					],
 					{
-						height: `${height}px`,
-						width: `${width}px`,
-						transform: `translate(${x}px, ${y}px)`,
-					},
-				],
-				{
-					duration: focusConfig.duration,
-					easing: 'ease-out',
-					fill: 'forwards',
-				}
-			);
+						duration: focusConfig.duration,
+						easing: 'ease-out',
+						fill: 'forwards',
+					}
+				)
+				.addEventListener('finish', () => {
+					if (!indicatorRef.current) return;
+					indicatorRef.current.style.transform = `translate(${x}px, ${y}px)`;
+					indicatorRef.current.style.width = `${width}px`;
+					indicatorRef.current.style.height = `${height}px`;
+				});
 		},
 		[indicatorRef.current, focusedElement]
 	);
