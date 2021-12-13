@@ -1,5 +1,5 @@
 import { FunctionalComponent, h, Fragment } from 'preact';
-import { useState } from 'preact/hooks';
+import { useState, useMemo, useEffect } from 'preact/hooks';
 import useServerlessRequest from '../../hooks/useServerlessRequest';
 import ProjectTicker from './ProjectTicker';
 import ProjectDialog from './ProjectDialog';
@@ -8,6 +8,10 @@ import style from './style.css';
 
 const Projects: FunctionalComponent = () => {
 	const response = useServerlessRequest<Project[]>('getProjects');
+	const projects = useMemo<Project[] | undefined>(() => {
+		return response.data;
+	}, [response]);
+
 	const [project, setProject] = useState<Project | null>(null);
 
 	const onProjectClick = (project: Project, el: HTMLElement) => {
@@ -15,20 +19,18 @@ const Projects: FunctionalComponent = () => {
 		setProject(project);
 	};
 
-	return (
-		<>
-			{response.data ? (
-				<div class={style.projectWrapper}>
-					<ProjectDialog project={project} />
+	if (!projects) {
+		return <div>Loading...</div>;
+	}
 
-					<div class={style.projects}>
-						<ProjectTicker projects={response.data} onProjectClick={onProjectClick} />
-					</div>
-				</div>
-			) : (
-				<div>...</div>
-			)}
-		</>
+	return (
+		<div class={style.projectWrapper}>
+			<ProjectDialog project={project} />
+
+			<div class={style.projects}>
+				<ProjectTicker projects={projects} onProjectClick={onProjectClick} />
+			</div>
+		</div>
 	);
 };
 
