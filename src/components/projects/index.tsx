@@ -1,7 +1,7 @@
-import { FunctionalComponent, h, Fragment } from 'preact';
+import { FunctionalComponent, h } from 'preact';
 import { useState, useMemo, useEffect } from 'preact/hooks';
 import useServerlessRequest from '../../hooks/useServerlessRequest';
-import ProjectTicker from './ProjectTicker';
+import ProjectTicker, { TickerState } from './ProjectTicker';
 import ProjectDialog from './ProjectDialog';
 import { Project } from './ProjectItem';
 import style from './style.css';
@@ -12,12 +12,17 @@ const Projects: FunctionalComponent = () => {
 		return response.data;
 	}, [response]);
 
-	const [project, setProject] = useState<Project | null>(null);
+	const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>();
+	const selectedProject = useMemo<Project | undefined>(() => {
+		return selectedProjectId ? projects?.[selectedProjectId] : undefined;
+	}, [selectedProjectId, projects]);
 
-	const onProjectClick = (project: Project, el: HTMLElement) => {
-		console.log('clicked on project:', project, el);
-		setProject(project);
-	};
+	const [state, setState] = useState<TickerState>('idle');
+
+	useEffect(() => {
+		setState('scrolling');
+		return () => setState('idle');
+	}, []);
 
 	if (!projects) {
 		return <div>Loading...</div>;
@@ -25,10 +30,18 @@ const Projects: FunctionalComponent = () => {
 
 	return (
 		<div class={style.projectWrapper}>
-			<ProjectDialog project={project} />
+			<ProjectDialog project={selectedProject} />
 
 			<div class={style.projects}>
-				<ProjectTicker projects={projects} onProjectClick={onProjectClick} />
+				<ProjectTicker
+					state={state}
+					projects={projects}
+					onProjectClicked={() => setState('centering')}
+					onProjectCentered={(proj) => {
+						setState('paused');
+						setSelectedProjectId(projects.indexOf(proj));
+					}}
+				/>
 			</div>
 		</div>
 	);

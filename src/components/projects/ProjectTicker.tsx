@@ -15,16 +15,23 @@ const tickerConfig = {
 	containerGenerationFaktor: 0.75, // factor of the container size to generate new container on click events
 };
 
-type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
+export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
 
 type ProjectTickerProps = {
+	state: TickerState;
 	projects: Project[];
-	onProjectClick: (project: Project, element: HTMLElement) => void;
+	onProjectClicked?: (project: Project, element: HTMLElement) => void;
+	onProjectCentered?: (project: Project, element: HTMLElement) => void;
 };
 
-const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, onProjectClick }) => {
-	const [state, setState] = useState<TickerState>('idle');
+const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
+	state,
+	projects,
+	onProjectClicked,
+	onProjectCentered,
+}) => {
 	const [scrollPos, setScrollPos] = useState(0);
+
 	const ticker = useRef<HTMLDivElement>(null);
 	const wrapper = useRef<HTMLDivElement>(null);
 	const clickDiff = useRef(0);
@@ -51,7 +58,7 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, onPr
 
 	const projectClickHandler = useCallback(
 		(project: Project, el: HTMLElement) => {
-			setState('centering');
+			onProjectClicked?.(project, el);
 			const itemBcr = el.getBoundingClientRect();
 			const tickerBcr = ticker.current!.getBoundingClientRect();
 			const diff = itemBcr.x + itemBcr.width / 2 - (tickerBcr.x + tickerBcr.width / 2);
@@ -72,7 +79,7 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, onPr
 				)
 				.addEventListener('finish', () => {
 					animationCleanup(diff);
-					onProjectClick(project, el);
+					onProjectCentered?.(project, el);
 				});
 		},
 		[wrapper.current]
@@ -123,7 +130,6 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, onPr
 
 	const animationCleanup = useCallback(
 		(diff: number) => {
-			setState('paused');
 			setScrollPos((prev) => {
 				let newPos = prev + diff;
 				clickDiff.current += diff;
@@ -156,31 +162,23 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, onPr
 	}, [width.current]);
 
 	useEffect(() => {
-		if (!wrapper.current || !ticker.current) return;
-		width.current = {
-			ticker: ticker.current.clientWidth,
-			wrapper: wrapper.current.clientWidth,
-			container: wrapper.current.firstElementChild!.clientWidth,
-		};
-
-		setState('scrolling');
-
-		// automatically stops the ticker when the component is unmounted
-		return () => setState('idle');
-	}, []);
-
-	useEffect(() => {
 		if (state === 'scrolling') {
 			return tickerAnimation.start();
 		}
 		tickerAnimation.stop();
 	}, [state]);
 
+	useEffect(() => {
+		if (!wrapper.current || !ticker.current) return;
+		width.current = {
+			ticker: ticker.current.clientWidth,
+			wrapper: wrapper.current.clientWidth,
+			container: wrapper.current.firstElementChild!.clientWidth,
+		};
+	}, []);
+
 	return (
 		<div class={style.projectTicker} ref={ticker}>
-			<div class={style.debugPanel} onClick={() => setState('scrolling')} aria-hidden={true}>
-				{state}
-			</div>
 			<div
 				ref={wrapper}
 				class={style.projectContainerWrapper}

@@ -4,7 +4,7 @@ import { Project } from './ProjectItem';
 import style from './style.css';
 
 interface ProjectDialogProps {
-	project: Project | null;
+	project?: Project;
 }
 
 const ProjectDialog: FunctionalComponent<ProjectDialogProps> = ({ project }) => {
