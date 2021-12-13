@@ -2,6 +2,8 @@
 	position: relative;
 	display: flex;
 	justify-content: center;
+	border: 1px solid #ccc;
+	height: 60px;
 }
 
 .projects {
@@ -10,9 +12,7 @@
 	justify-content: flex-start;
 	align-items: center;
 	width: 100%;
-	height: 60px;
 	overflow: hidden;
-	border: 1px solid #ccc;
 }
 
 .projectTicker {
@@ -42,10 +42,17 @@
 	margin: 2px 5px;
 	border-radius: 100px;
 	background: #eee;
+	color: #333;
 	cursor: pointer;
+	transition: all 240ms ease-out;
 }
 
-.debugPanel {
+.projectActive {
+	background: #333;
+	color: #eee;
+}
+
+.debugger {
 	position: absolute;
 	z-index: 10000;
 	bottom: 0;

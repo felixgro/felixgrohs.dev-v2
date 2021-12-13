@@ -1,56 +1,56 @@
-import { h, FunctionalComponent } from 'preact';
-import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
+import { h, FunctionalComponent, Fragment } from 'preact';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'preact/hooks';
 import useAnimationFrame from '../../hooks/useAnimationFrame';
+import useWindowSize from '../../hooks/useWindowSize';
 import ProjectItem, { Project } from './ProjectItem';
 import style from './style.css';
 
 const tickerConfig = {
-	speed: 0.5, // automatic scrolling speed
+	speed: 1, // automatic scrolling speed
 	centeringSpeed: 0.8, // speed of centering the clicked project
-	centeringDurationMax: 0.5, // max duration of centering the clicked project (can increase specified centeringSpeed)
+	centeringDurationMax: 500, // max duration of centering the clicked project (can increase specified centeringSpeed)
 	centeringEase: 'ease-out', // easing function for centering
-	marginFactor: 1.8, // overlapping distance factor for both sides of the screen
+	marginFactor: 1.5, // overlapping distance factor for both sides of the screen
 	marginMin: 600, // minimum overlapping distance for mobile
-	avgProjectWidth: 200, // average width of a signle project node
-	containerGenerationFaktor: 0.75, // factor of the container size to generate new container on click events
 };
 
 export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
 
-type ProjectTickerProps = {
+type TickerProps = {
 	state: TickerState;
 	projects: Project[];
 	onProjectClicked?: (project: Project, element: HTMLElement) => void;
 	onProjectCentered?: (project: Project, element: HTMLElement) => void;
 };
 
-const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
+const ProjectTicker: FunctionalComponent<TickerProps> = ({
 	state,
 	projects,
 	onProjectClicked,
 	onProjectCentered,
 }) => {
 	const [scrollPos, setScrollPos] = useState(0);
+	const tickerRef = useRef<HTMLDivElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const windowSize = useWindowSize();
 
-	const ticker = useRef<HTMLDivElement>(null);
-	const wrapper = useRef<HTMLDivElement>(null);
-	const clickDiff = useRef(0);
-	const width = useRef({
-		ticker: 0,
-		wrapper: 0,
-		container: 0,
-	});
+	const getBcrs = useCallback(() => {
+		return {
+			view: tickerRef.current?.getBoundingClientRect(),
+			wrapper: wrapperRef.current?.getBoundingClientRect(),
+			container: wrapperRef.current?.children[0]?.getBoundingClientRect(),
+		};
+	}, [tickerRef.current, wrapperRef.current, windowSize]);
 
 	const tickerAnimation = useAnimationFrame(() => {
 		if (state !== 'scrolling') return;
+		const { view, wrapper, container } = getBcrs();
+		if (!view || !wrapper || !container) return;
 
 		setScrollPos((curr) => {
-			if (
-				width.current.wrapper - curr + width.current.ticker / 2 <
-				tickerConfig.marginFactor * window.innerWidth
-			) {
+			if (wrapper.width - curr - view.width < view.width * tickerConfig.marginFactor * 0.5) {
 				appendContainer();
-				return curr - width.current.container;
+				return curr - container.width;
 			}
 			return curr + tickerConfig.speed;
 		});
@@ -60,13 +60,17 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 		(project: Project, el: HTMLElement) => {
 			onProjectClicked?.(project, el);
 			const itemBcr = el.getBoundingClientRect();
-			const tickerBcr = ticker.current!.getBoundingClientRect();
+			const tickerBcr = tickerRef.current!.getBoundingClientRect();
 			const diff = itemBcr.x + itemBcr.width / 2 - (tickerBcr.x + tickerBcr.width / 2);
-			const duration = Math.abs(diff / tickerConfig.centeringSpeed);
-			const currentX =
-				parseFloat(wrapper.current!.style.transform.replace(/[^\d.]/g, '')) * -1;
+			let duration = Math.abs(diff / tickerConfig.centeringSpeed);
+			if (duration > tickerConfig.centeringDurationMax) {
+				duration = tickerConfig.centeringDurationMax;
+			}
 
-			wrapper
+			const currentX =
+				parseFloat(wrapperRef.current!.style.transform.replace(/[^\d.]/g, '')) * -1;
+
+			wrapperRef
 				.current!.animate(
 					[
 						{ transform: `translateX(${currentX}px)` },
@@ -82,7 +86,7 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 					onProjectCentered?.(project, el);
 				});
 		},
-		[wrapper.current]
+		[wrapperRef.current]
 	);
 
 	const createProjectContainer = useCallback(() => {
@@ -95,71 +99,77 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 		);
 	}, [projects]);
 
-	const initProjectContainers = useCallback(() => {
-		// approximate the width of a single container by using the average width of a project
-		// this is necessary because the width of the container is not known until the projects are rendered
-		const avgContainerWidth = projects.length * tickerConfig.avgProjectWidth;
-		const containers = [];
+	const projectContainers = useMemo(() => {
+		const { container, view } = getBcrs();
 
-		// create as many containers as there is horizontal space for
-		let currentWidth = 0;
-		while (
-			currentWidth <
-			window.innerWidth + window.innerWidth * tickerConfig.marginFactor * 2
-		) {
-			const container = createProjectContainer();
-			currentWidth += avgContainerWidth;
-			containers.push(container);
+		// only insert one container first, to get the correct width
+		// and then insert the rest of the containers immediately
+		if (!container || !view) {
+			return createProjectContainer();
 		}
 
+		const containers = [];
+		let margin = view.width * tickerConfig.marginFactor;
+		if (margin < tickerConfig.marginMin) {
+			margin = tickerConfig.marginMin;
+		}
+		for (let w = 0; w < view.width + 2 * margin; w += container.width) {
+			containers.push(createProjectContainer());
+		}
 		return containers;
-	}, [projects]);
+	}, [projects, getBcrs]);
 
 	// moves first container all the way to the right as the new trailing container
 	// this container recycling is done to prevent the browser from creating new DOM nodes
 	const appendContainer = useCallback(() => {
-		const firstContainer = wrapper.current?.removeChild(wrapper.current?.firstChild!);
-		if (firstContainer) wrapper.current?.appendChild(firstContainer);
-	}, [wrapper]);
+		if (!wrapperRef.current?.firstChild) return;
+		const firstContainer = wrapperRef.current?.removeChild(wrapperRef.current?.firstChild);
+		if (firstContainer) {
+			wrapperRef.current?.appendChild(firstContainer);
+		}
+	}, []);
 
 	const prependContainer = useCallback(() => {
-		const lastContainer = wrapper.current?.removeChild(wrapper.current?.lastChild!);
-		if (lastContainer)
-			wrapper.current?.insertBefore(lastContainer, wrapper.current?.firstChild);
-	}, [wrapper]);
+		const lastContainer = wrapperRef.current?.removeChild(wrapperRef.current?.lastChild!);
+		if (lastContainer) {
+			wrapperRef.current?.insertBefore(lastContainer, wrapperRef.current?.firstChild);
+		}
+	}, []);
 
 	const animationCleanup = useCallback(
 		(diff: number) => {
+			let res = 0;
+			const { container, view, wrapper } = getBcrs();
+			if (!container || !view || !wrapper) return;
+
 			setScrollPos((prev) => {
 				let newPos = prev + diff;
-				clickDiff.current += diff;
 
 				if (
-					clickDiff.current >
-					width.current.container * tickerConfig.containerGenerationFaktor
+					diff > 0 &&
+					wrapper.width - newPos - view.width < view.width * tickerConfig.marginFactor
 				) {
-					clickDiff.current -= width.current.container;
+					newPos -= container.width;
+					res++;
 					appendContainer();
-					newPos -= width.current.container;
-				} else if (
-					clickDiff.current <
-					-width.current.container * tickerConfig.containerGenerationFaktor
-				) {
-					clickDiff.current += width.current.container;
+				} else if (diff < 0 && prev < view.width * tickerConfig.marginFactor) {
+					newPos += container.width;
+					res--;
 					prependContainer();
-					newPos += width.current.container;
 				}
-
 				return newPos;
 			});
+
+			return res;
 		},
-		[width.current]
+		[getBcrs]
 	);
 
 	useEffect(() => {
-		// center the ticker in the viewport each time a width changes
-		setScrollPos(width.current.wrapper / 2 - width.current.ticker / 2);
-	}, [width.current]);
+		const { view, wrapper } = getBcrs();
+		if (!view || !wrapper) return;
+		setScrollPos(wrapper.width / 2 - view.width / 2);
+	}, [projectContainers]);
 
 	useEffect(() => {
 		if (state === 'scrolling') {
@@ -168,23 +178,14 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 		tickerAnimation.stop();
 	}, [state]);
 
-	useEffect(() => {
-		if (!wrapper.current || !ticker.current) return;
-		width.current = {
-			ticker: ticker.current.clientWidth,
-			wrapper: wrapper.current.clientWidth,
-			container: wrapper.current.firstElementChild!.clientWidth,
-		};
-	}, []);
-
 	return (
-		<div class={style.projectTicker} ref={ticker}>
+		<div class={style.projectTicker} ref={tickerRef}>
 			<div
-				ref={wrapper}
+				ref={wrapperRef}
 				class={style.projectContainerWrapper}
 				style={`transform: translateX(${scrollPos * -1}px)`}
 			>
-				{initProjectContainers()}
+				{projectContainers}
 			</div>
 		</div>
 	);

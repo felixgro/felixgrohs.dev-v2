@@ -26,6 +26,7 @@ export const handler: Handler = async (event, context) => {
 
         return {
             name: r.name,
+            id: r.id,
             description: r.description,
             stars: r.stargazers_count,
             url: r.html_url,

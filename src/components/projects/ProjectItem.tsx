@@ -3,6 +3,7 @@ import { useCallback } from 'preact/hooks';
 import style from './style.css';
 
 export interface Project {
+	id: number;
 	name: string;
 	description: string;
 	url: string;
@@ -21,13 +22,13 @@ interface ProjectItemProps {
 const ProjectItem: FunctionalComponent<ProjectItemProps> = ({ project, onClick }) => {
 	const handleClickEvent = useCallback(
 		(e: Event) => {
-			onClick(project, e.currentTarget as HTMLElement);
+			onClick(project, e.target as HTMLElement);
 		},
 		[onClick, project]
 	);
 
 	return (
-		<div class={style.project} onClick={handleClickEvent}>
+		<div class={style.project} onClick={handleClickEvent} data-project-id={project.id}>
 			{project.name}
 		</div>
 	);

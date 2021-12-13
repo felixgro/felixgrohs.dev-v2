@@ -8,13 +8,11 @@ interface ProjectDialogProps {
 }
 
 const ProjectDialog: FunctionalComponent<ProjectDialogProps> = ({ project }) => {
-	if (!project) return <></>;
+	if (project === undefined) return <></>;
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const prevHeight = useRef<number>(0);
 
 	const animateHeightTo = useCallback((height: number) => {
-		console.log({ height, prevHeight: prevHeight.current });
-
 		dialogRef
 			.current!.animate([{ height: prevHeight.current + 'px' }, { height: height + 'px' }], {
 				duration: 300,
