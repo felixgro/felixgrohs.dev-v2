@@ -1,4 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
+import AnimatedFocus from './AnimatedFocus';
 import Header from './main/Header';
 import Content from './main/Content';
 import Footer from './main/Footer';
@@ -11,6 +12,7 @@ const App: FunctionalComponent = () => {
 			<Content />
 			<Projects />
 			<Footer />
+			<AnimatedFocus />
 		</div>
 	);
 };
