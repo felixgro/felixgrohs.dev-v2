@@ -1,24 +1,26 @@
 import { h, FunctionalComponent } from 'preact';
-import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks';
+import useWindowSize from '../hooks/useWindowSize';
 
 const focusConfig = {
-	duration: 160,
 	paddingX: 10,
 	paddingY: 10,
+	duration: 160,
+	easing: 'ease-out',
 };
 
-interface FocusProps {}
-
-interface FocusEventState {
-	keyboard: boolean;
-	focus: boolean;
-	tId: number | null;
+interface ViewRect {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
 }
 
-const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
+const AnimatedFocus: FunctionalComponent = () => {
 	const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(null);
 	const indicatorRef = useRef<HTMLDivElement>(null);
 	const usedKey = useRef(false);
+	const { width } = useWindowSize();
 
 	const isValidFocusTarget = useCallback((el: Element | Node): boolean => {
 		if (
@@ -33,41 +35,50 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 		return false;
 	}, []);
 
+	const focusRect = useMemo<ViewRect | null>(() => {
+		if (!focusedElement || !indicatorRef.current) {
+			return null;
+		}
+		const targetBcr = focusedElement.getBoundingClientRect(),
+			parentBcr = indicatorRef.current.parentElement!.getBoundingClientRect(),
+			x = targetBcr.left - parentBcr.left - focusConfig.paddingX,
+			y = targetBcr.top - parentBcr.top - focusConfig.paddingY,
+			width = targetBcr.width + focusConfig.paddingX * 2,
+			height = targetBcr.height + focusConfig.paddingY * 2;
+
+		return { x, y, width, height };
+	}, [indicatorRef.current, focusedElement, width]);
+
+	const positionateIndicator = useCallback(({ x, y, width, height }: ViewRect) => {
+		if (!indicatorRef.current) return;
+		indicatorRef.current.style.transform = `translate(${x}px, ${y}px)`;
+		indicatorRef.current.style.width = `${width}px`;
+		indicatorRef.current.style.height = `${height}px`;
+	}, []);
+
 	const setFocus = useCallback(
 		(shouldAnimate: boolean) => {
-			if (!indicatorRef.current || !focusedElement) return;
-
-			const targetBcr = focusedElement.getBoundingClientRect(),
-				parentBcr = indicatorRef.current.parentElement!.getBoundingClientRect(),
-				x = targetBcr.left - parentBcr.left - focusConfig.paddingX,
-				y = targetBcr.top - parentBcr.top - focusConfig.paddingY,
-				width = targetBcr.width + focusConfig.paddingX * 2,
-				height = targetBcr.height + focusConfig.paddingY * 2;
-
-			indicatorRef.current.style.display = 'block';
+			if (!focusRect || !indicatorRef.current) return;
 
 			indicatorRef.current
-				?.animate(
+				.animate(
 					[
 						{
-							height: `${height}px`,
-							width: `${width}px`,
-							transform: `translate(${x}px, ${y}px)`,
+							height: `${focusRect.height}px`,
+							width: `${focusRect.width}px`,
+							transform: `translate(${focusRect.x}px, ${focusRect.y}px)`,
 						},
 					],
 					{
 						duration: shouldAnimate ? focusConfig.duration : 0,
-						easing: 'ease-out',
+						easing: focusConfig.easing,
 					}
 				)
 				.addEventListener('finish', () => {
-					if (!indicatorRef.current) return;
-					indicatorRef.current.style.transform = `translate(${x}px, ${y}px)`;
-					indicatorRef.current.style.width = `${width}px`;
-					indicatorRef.current.style.height = `${height}px`;
+					positionateIndicator(focusRect);
 				});
 		},
-		[indicatorRef.current, focusedElement]
+		[focusRect]
 	);
 
 	const focusOutHandler = useCallback((e: FocusEvent) => {
@@ -107,10 +118,20 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 		if (!focusedElement || !indicatorRef.current) {
 			return;
 		}
-
 		const shouldAnimate = indicatorRef.current.style.display !== 'none';
 		setFocus(shouldAnimate);
+
+		if (!shouldAnimate) {
+			indicatorRef.current.style.display = 'block';
+		}
 	}, [focusedElement]);
+
+	useEffect(() => {
+		if (!focusedElement || !focusRect) {
+			return;
+		}
+		positionateIndicator(focusRect);
+	}, [width]);
 
 	useEffect(() => {
 		document.addEventListener('click', abortKeyboardFocus);

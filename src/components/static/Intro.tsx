@@ -5,12 +5,6 @@ import Linebreak from '../shared/LineBreak';
 import style from './intro.css';
 
 const Intro: FunctionalComponent = () => {
-	const { width } = useWindowSize();
-
-	useEffect(() => {
-		console.log('Intro width: ', width);
-	}, [width]);
-
 	return (
 		<main class={style.intro}>
 			<article>
