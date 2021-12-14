@@ -19,3 +19,19 @@ const localStorageMock = (function() {
 Object.defineProperty(window, 'localStorage', {
 	value: localStorageMock
 }); */
+
+// FIXME: this does not work on each HTMLELement in JSDOM
+const getBoundingClientRectMock = (() => ({
+	top: 0,
+	left: 0,
+	width: 0,
+	height: 0,
+	right: 0,
+	bottom: 0
+}))();
+
+Object.defineProperty(HTMLElement, 'getBoundingClientRect', {
+	value: getBoundingClientRectMock
+});
+
+// TODO: add HTMLElement.animate() mock
