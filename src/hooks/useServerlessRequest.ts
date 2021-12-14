@@ -24,10 +24,14 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
     });
 
     const sendRequest = async () => {
-        const url = `${window.location.href}.netlify/functions/${functionName}`;
-        const response = await fetch(url, opts?.fetchOptions);
-        const json = await response.json();
-        return json;
+        const url = `${window.location.origin}/.netlify/functions/${functionName}`;
+
+        try {
+            const response = await fetch(url, opts?.fetchOptions);
+            return await response.json();
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const checkCache = useCallback(() => {
