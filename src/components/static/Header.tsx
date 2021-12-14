@@ -1,10 +1,10 @@
 import { FunctionalComponent, h } from 'preact';
-import style from './style.css';
+import style from './header.css';
 
 const Header: FunctionalComponent = () => {
 	return (
 		<header class={style.header}>
-			<a href="felixgrohs.dev">
+			<a href="https://felixgrohs.dev">
 				<svg
 					aria-label="Personal Logo"
 					role="img"

@@ -2,6 +2,15 @@
 	box-sizing: border-box;
 }
 
+html {
+	font-family: 'Helvetica Neue', arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-size: 11pt;
+	font-weight: 400;
+	color: #444;
+}
+
 html,
 body {
 	display: flex;
@@ -14,15 +23,6 @@ body {
 	padding: 0;
 	margin: 0;
 	background: #fafafa;
-	font-family: 'Helvetica Neue', arial, sans-serif;
-	font-weight: 400;
-	color: #444;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-html {
-	align-items: stretch;
 }
 
 body {
@@ -33,6 +33,6 @@ body {
 	position: relative;
 	display: grid;
 	grid-template-rows: 75px 1fr auto 25px;
-	height: 100%;
+	min-height: 100%;
 	width: 100%;
 }

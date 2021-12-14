@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import { useState, useMemo, useEffect, useRef } from 'preact/hooks';
+import { useState, useMemo, useEffect } from 'preact/hooks';
 import useServerlessRequest from '../../hooks/useServerlessRequest';
 import ProjectTicker, { TickerState } from './ProjectTicker';
 import ProjectTickerDebugger from './ProjectTickerDebugger';

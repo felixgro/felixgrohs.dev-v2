@@ -2,7 +2,7 @@ import { h, FunctionalComponent } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
 const focusConfig = {
-	duration: 240,
+	duration: 160,
 	paddingX: 10,
 	paddingY: 10,
 };
@@ -16,14 +16,9 @@ interface FocusEventState {
 }
 
 const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
-	const indicatorRef = useRef<HTMLDivElement>(null);
 	const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(null);
-	const lastTab = useRef<number>(0);
-	const eventState = useRef<FocusEventState>({
-		keyboard: false,
-		focus: false,
-		tId: null,
-	});
+	const indicatorRef = useRef<HTMLDivElement>(null);
+	const usedKey = useRef(false);
 
 	const isValidFocusTarget = useCallback((el: Element | Node): boolean => {
 		if (
@@ -41,13 +36,13 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 	const setFocus = useCallback(
 		(shouldAnimate: boolean) => {
 			if (!indicatorRef.current || !focusedElement) return;
-			const targetBcr = focusedElement.getBoundingClientRect();
-			const parentBcr = indicatorRef.current.parentElement!.getBoundingClientRect();
 
-			const x = targetBcr.left - parentBcr.left - focusConfig.paddingX;
-			const y = targetBcr.top - parentBcr.top - focusConfig.paddingY;
-			const width = targetBcr.width + focusConfig.paddingX * 2;
-			const height = targetBcr.height + focusConfig.paddingY * 2;
+			const targetBcr = focusedElement.getBoundingClientRect(),
+				parentBcr = indicatorRef.current.parentElement!.getBoundingClientRect(),
+				x = targetBcr.left - parentBcr.left - focusConfig.paddingX,
+				y = targetBcr.top - parentBcr.top - focusConfig.paddingY,
+				width = targetBcr.width + focusConfig.paddingX * 2,
+				height = targetBcr.height + focusConfig.paddingY * 2;
 
 			indicatorRef.current.style.display = 'block';
 
@@ -75,32 +70,6 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 		[indicatorRef.current, focusedElement]
 	);
 
-	const animateFocus = useCallback(() => {
-		if (!indicatorRef.current || !focusedElement) return;
-		const targetBcr = focusedElement.getBoundingClientRect();
-		const parentBcr = indicatorRef.current.parentElement!.getBoundingClientRect();
-
-		const x = targetBcr.left - parentBcr.left - focusConfig.paddingX;
-		const y = targetBcr.top - parentBcr.top - focusConfig.paddingY;
-		const width = targetBcr.width + focusConfig.paddingX * 2;
-		const height = targetBcr.height + focusConfig.paddingY * 2;
-
-		indicatorRef.current?.animate(
-			[
-				{
-					height: `${height}px`,
-					width: `${width}px`,
-					transform: `translate(${x}px, ${y}px)`,
-				},
-			],
-			{
-				duration: focusConfig.duration,
-				easing: 'ease-out',
-				fill: 'forwards',
-			}
-		);
-	}, [indicatorRef.current, focusedElement]);
-
 	const focusOutHandler = useCallback((e: FocusEvent) => {
 		if (!e.relatedTarget && indicatorRef.current) {
 			setFocusedElement(null);
@@ -116,23 +85,22 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 	const focusInHandler = useCallback(
 		(e: FocusEvent) => {
 			const target = e.target as HTMLElement;
-			if (eventState.current.keyboard && isValidFocusTarget(target)) {
+			if (usedKey.current && isValidFocusTarget(target)) {
 				setFocusedElement(target);
 			}
 		},
-		[eventState.current.keyboard]
+		[usedKey.current]
 	);
 
 	const keyDownHandler = useCallback((e: KeyboardEvent) => {
-		if (e.metaKey || e.ctrlKey || e.altKey || e.code !== 'Tab') {
+		if (e.metaKey || e.ctrlKey || e.altKey) {
 			return;
 		}
-		eventState.current.keyboard = true;
-		lastTab.current = e.timeStamp;
+		usedKey.current = true;
 	}, []);
 
 	const abortKeyboardFocus = useCallback(() => {
-		eventState.current.keyboard = false;
+		usedKey.current = false;
 	}, []);
 
 	useEffect(() => {
@@ -163,6 +131,7 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 
 	return (
 		<div
+			aria-hidden={true}
 			style={{
 				position: 'absolute',
 				pointerEvents: 'none',
