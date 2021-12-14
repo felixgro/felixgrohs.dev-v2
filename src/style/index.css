@@ -26,6 +26,7 @@ body {
 }
 
 body {
+	box-sizing: border-box;
 	padding: 25px;
 }
 

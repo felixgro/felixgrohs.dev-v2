@@ -1,5 +1,6 @@
 .intro {
 	border: 1px solid #ccc;
+	padding: 50px;
 	display: flex;
 	align-items: center;
 }
