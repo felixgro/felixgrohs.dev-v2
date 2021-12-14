@@ -1,5 +1,5 @@
 import { h, FunctionalComponent } from 'preact';
-import { useState, useMemo, useEffect, useRef, useCallback } from 'preact/hooks';
+import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 
 const focusConfig = {
 	duration: 240,
@@ -50,12 +50,6 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 			const height = targetBcr.height + focusConfig.paddingY * 2;
 
 			indicatorRef.current.style.display = 'block';
-			if (!shouldAnimate) {
-				indicatorRef.current.style.transform = `translate(${x}px, ${y}px)`;
-				indicatorRef.current.style.width = `${width}px`;
-				indicatorRef.current.style.height = `${height}px`;
-				return;
-			}
 
 			indicatorRef.current
 				?.animate(
@@ -67,9 +61,8 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 						},
 					],
 					{
-						duration: focusConfig.duration,
+						duration: shouldAnimate ? focusConfig.duration : 0,
 						easing: 'ease-out',
-						fill: 'forwards',
 					}
 				)
 				.addEventListener('finish', () => {
@@ -159,6 +152,9 @@ const AnimatedFocus: FunctionalComponent<FocusProps> = ({}) => {
 		document.addEventListener('focusin', focusInHandler);
 		document.addEventListener('focusout', focusOutHandler);
 		return () => {
+			document.removeEventListener('click', abortKeyboardFocus);
+			document.removeEventListener('touchstart', abortKeyboardFocus);
+			document.removeEventListener('touchmove', abortKeyboardFocus);
 			document.removeEventListener('keydown', keyDownHandler);
 			document.removeEventListener('focusin', focusInHandler);
 			document.removeEventListener('focusout', focusOutHandler);
