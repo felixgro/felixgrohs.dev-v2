@@ -36,21 +36,15 @@ npm run dev
 ***Note:*** *This does NOT start serverless functions required for dynamic project fetching. A fallback component will get rendered instead.*
 
 ### Project Structure
-|Directory|Description|
-| :----- | :----- |
-|`functions/`|serverless node functions|
-|`src/`|all frontend files|
-|`src/assets`|static assets|
-|`src/components`|components|
-|`src/hooks`|custom hooks|
-|`src/styles/`|css files|
-|`src/styles/modules/`|css modules|
-
-#### Path Aliases
-|Alias|Actual Path|
-|:--|:--|
-|`@/*`|`src/*`|
-|`#/*`|`src/styles/modules/*`|
+| Directory | Alias | Description |
+| :----- | :----- | :----- |
+|`functions/`||serverless functions|
+|`src/`|`@/`|frontend files|
+|`src/assets/`||static assets|
+|`src/components/`||components|
+|`src/hooks/`||custom hooks|
+|`src/styles/`||css files|
+|`src/styles/modules/`|`#/`|css modules|
 
 ### CLI Commands
 *   `npm install`: Install dependencies
