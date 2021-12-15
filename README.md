@@ -11,18 +11,20 @@ Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) usi
 - Modular CSS
 
 ## Development
-These instructions will get you a copy of my website up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
+- JS Package Manager (NPM, Yarn, etc..)
+- Node
 - Git
-- Node Package Manager (NPM, Yarn, etc..)
 
 ### Getting Started
-Clone this repository and specify a directory name (f.e myClone):
+These instructions will get you a copy of my website up and running on your local machine for development and testing purposes.
+
+Start by cloning this repository and specify a directory name (f.e myClone):
 ```bash
 git clone https://github.com/felixgro/felixgrohs.dev-v2.git myClone
 ```
-Go in the cloned directory and install dependencies:
+Go in the cloned directory and install all dependencies using your package manager of choice:
 ```bash
 cd myClone
 npm i
@@ -31,13 +33,24 @@ Boot up a development server:
 ```bash
 npm run dev
 ```
+***Note:*** *This does NOT start serverless functions required for dynamic project fetching. A fallback component will get rendered instead.*
 
+### Project Structure
+|Directory|Description|
+| :----- | :----- |
+|`functions/`|serverless node functions|
+|`src/`|all frontend files|
+|`src/assets`|static assets|
+|`src/components`|components|
+|`src/hooks`|custom hooks|
+|`src/styles/`|css files|
+|`src/styles/modules/`|css modules|
 
-### Import Aliases
-|Alias|Path|
+#### Path Aliases
+|Alias|Actual Path|
 |:--|:--|
-|`@/*`| `src/*`|
-|`#/*`| `src/styles/modules/*`|
+|`@/*`|`src/*`|
+|`#/*`|`src/styles/modules/*`|
 
 ### CLI Commands
 *   `npm install`: Install dependencies
