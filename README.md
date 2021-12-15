@@ -1,6 +1,17 @@
-# test
+# felixgrohs.dev v2
 
-## CLI Commands
+Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
+
+## Key improvements
+- Pre-render components at build time to support disabled js and improve FCP
+- Serverless function for fetching projects directly from my github profile
+- Client-side caching to minimize requests
+- Improved animation performance
+- Animated tab focus
+
+## Development
+
+### CLI Commands
 *   `npm install`: Installs dependencies
 
 *   `npm run dev`: Run a development, HMR server
@@ -15,5 +26,4 @@
     [`enzyme-adapter-preact-pure`](https://github.com/preactjs/enzyme-adapter-preact-pure) for
     your tests
 
-
-For detailed explanation on how things work, checkout the [CLI Readme](https://github.com/developit/preact-cli/blob/master/README.md).
+For detailed explanation on how things work, checkout [preact-cli](https://github.com/developit/preact-cli/blob/master/README.md).
