@@ -6,6 +6,7 @@ Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) usi
 - Pre-render components at build time to support disabled js and improve FCP
 - Serverless function for fetching projects directly from my github profile
 - Client-side caching to minimize requests
+- PWA support by using a Service Worker
 - Improved animation performance
 - Animated tab focus
 
