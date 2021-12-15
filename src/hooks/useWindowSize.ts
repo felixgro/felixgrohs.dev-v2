@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'preact/hooks';
 import { useDebouncedCallback } from 'use-debounce-preact';
 
-const useWindowSize = () => {
+interface WindowSize {
+    width: number;
+    height: number;
+}
+
+const useWindowSize = (): WindowSize => {
     const [size, setSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight,

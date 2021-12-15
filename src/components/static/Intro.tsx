@@ -1,7 +1,4 @@
 import { h, FunctionalComponent } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
-import useWindowSize from '../../hooks/useWindowSize';
-import Linebreak from '../shared/LineBreak';
 import style from './intro.css';
 
 const Intro: FunctionalComponent = () => {
