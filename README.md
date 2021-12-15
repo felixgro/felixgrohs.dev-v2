@@ -12,13 +12,13 @@ Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) usi
 
 ## Development
 
-### Prerequisites
+### Requirements
 - JS Package Manager (NPM, Yarn, etc..)
 - Node
 - Git
 
 ### Getting Started
-These instructions will get you a copy of my website up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of this website up and running on your local machine for development and testing purposes.
 
 Start by cloning this repository and specify a directory name (f.e myClone):
 ```bash
