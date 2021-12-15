@@ -1,4 +1,5 @@
 import { h, FunctionalComponent } from 'preact';
+import Demo from './Demo';
 import style from '#/Intro.css';
 
 const Intro: FunctionalComponent = () => {
@@ -15,7 +16,7 @@ const Intro: FunctionalComponent = () => {
 					Visit me on <a href="#">Github</a> or <a href="#">Twitter</a>.
 				</p>
 			</article>
-			<div>Demo</div>
+			<Demo />
 		</main>
 	);
 };
