@@ -1,4 +1,4 @@
-import { h, FunctionalComponent } from 'preact';
+import { h, FunctionalComponent, Fragment } from 'preact';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks';
 import useWindowSize from '../hooks/useWindowSize';
 
@@ -17,6 +17,10 @@ interface ViewRect {
 }
 
 const AnimatedFocus: FunctionalComponent = () => {
+	if (typeof window === 'undefined') {
+		return <></>;
+	}
+
 	const [focusedElement, setFocusedElement] = useState<HTMLElement | null>(null);
 	const indicatorRef = useRef<HTMLDivElement>(null);
 	const usedKey = useRef(false);
