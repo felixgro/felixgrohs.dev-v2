@@ -1,9 +1,9 @@
-import { h, FunctionalComponent, Fragment } from 'preact';
+import { h, FunctionalComponent } from 'preact';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'preact/hooks';
-import useAnimationFrame from '../../hooks/useAnimationFrame';
-import useWindowSize from '../../hooks/useWindowSize';
+import useAnimationFrame from '@/hooks/useAnimationFrame';
+import useWindowSize from '@/hooks/useWindowSize';
 import ProjectItem, { Project } from './ProjectItem';
-import style from './style.css';
+import style from '#/ProjectTicker.css';
 
 const tickerConfig = {
 	speed: 1, // automatic scrolling speed

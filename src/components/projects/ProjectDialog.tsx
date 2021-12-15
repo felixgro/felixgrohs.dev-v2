@@ -1,14 +1,17 @@
 import { FunctionalComponent, h, Fragment } from 'preact';
-import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
+import { useEffect, useRef, useCallback } from 'preact/hooks';
 import { Project } from './ProjectItem';
-import style from './style.css';
+import style from '#/ProjectDialog.css';
 
 interface ProjectDialogProps {
 	project?: Project;
 }
 
 const ProjectDialog: FunctionalComponent<ProjectDialogProps> = ({ project }) => {
-	if (project === undefined) return <></>;
+	if (project === undefined) {
+		return <></>;
+	}
+
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const prevHeight = useRef<number>(0);
 

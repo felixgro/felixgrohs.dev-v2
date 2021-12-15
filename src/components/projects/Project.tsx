@@ -1,20 +1,21 @@
 import { FunctionalComponent, h } from 'preact';
 import { useState, useMemo, useEffect } from 'preact/hooks';
-import useServerlessRequest from '../../hooks/useServerlessRequest';
+import useServerlessRequest from '@/hooks/useServerlessRequest';
 import ProjectTicker, { TickerState } from './ProjectTicker';
 import ProjectTickerDebugger from './ProjectTickerDebugger';
 import ProjectDialog from './ProjectDialog';
-import { Project } from './ProjectItem';
-import style from './style.css';
+import { Project as ProjectType } from './ProjectItem';
+import style from '#/Project.css';
+import stylePI from '#/ProjectItem.css';
 
-const Projects: FunctionalComponent = () => {
-	const response = useServerlessRequest<Project[]>('getProjects');
-	const projects = useMemo<Project[] | undefined>(() => {
+const Project: FunctionalComponent = () => {
+	const response = useServerlessRequest<ProjectType[]>('getProjects');
+	const projects = useMemo<ProjectType[] | undefined>(() => {
 		return response.data;
 	}, [response]);
 
 	const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>();
-	const selectedProject = useMemo<Project | undefined>(() => {
+	const selectedProject = useMemo<ProjectType | undefined>(() => {
 		if (selectedProjectId === undefined) {
 			return undefined;
 		}
@@ -29,7 +30,11 @@ const Projects: FunctionalComponent = () => {
 	}, []);
 
 	if (!projects) {
-		return <small>Loading...</small>;
+		return (
+			<div class={style.projectWrapper}>
+				<small>Loading..</small>
+			</div>
+		);
 	} else {
 		return (
 			<div class={style.projectWrapper}>
@@ -44,15 +49,17 @@ const Projects: FunctionalComponent = () => {
 
 							window.requestAnimationFrame(() => {
 								const prevSelected = document.querySelectorAll(
-									`.${style.projectActive}`
+									`.${stylePI.projectItemActive}`
 								);
 								const newSelected = document.querySelectorAll(
 									`[data-project-id='${proj.id}']`
 								);
 								prevSelected?.forEach((el) =>
-									el.classList.remove(style.projectActive)
+									el.classList.remove(stylePI.projectItemActive)
 								);
-								newSelected?.forEach((el) => el.classList.add(style.projectActive));
+								newSelected?.forEach((el) =>
+									el.classList.add(stylePI.projectItemActive)
+								);
 							});
 						}}
 						onProjectCentered={(proj, el) => {
@@ -66,4 +73,4 @@ const Projects: FunctionalComponent = () => {
 	}
 };
 
-export default Projects;
+export default Project;

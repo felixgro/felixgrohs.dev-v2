@@ -1,0 +1,16 @@
+.projectWrapper {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	border: 1px solid #ccc;
+	height: 60px;
+}
+
+.projects {
+	position: relative;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	width: 100%;
+	overflow: hidden;
+}

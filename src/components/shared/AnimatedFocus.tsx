@@ -1,6 +1,6 @@
 import { h, FunctionalComponent, Fragment } from 'preact';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks';
-import useWindowSize from '../hooks/useWindowSize';
+import useWindowSize from '@/hooks/useWindowSize';
 
 const focusConfig = {
 	paddingX: 10,

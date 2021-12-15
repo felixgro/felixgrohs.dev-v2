@@ -1,16 +1,16 @@
 import { FunctionalComponent, h } from 'preact';
-import Intro from './static/Intro';
-import Header from './static/Header';
-import Footer from './static/Footer';
-import Projects from './projects/Projects';
-import AnimatedFocus from './AnimatedFocus';
+import Intro from '@/components/static/Intro';
+import Header from '@/components/static/Header';
+import Footer from '@/components/static/Footer';
+import ProjectContainer from '@/components/projects/Project';
+import AnimatedFocus from '@/components/shared/AnimatedFocus';
 
 const App: FunctionalComponent = () => {
 	return (
 		<div id="app">
 			<Header />
 			<Intro />
-			<Projects />
+			<ProjectContainer />
 			<Footer />
 			<AnimatedFocus />
 		</div>

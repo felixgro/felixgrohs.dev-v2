@@ -1,6 +1,6 @@
 import { h, FunctionalComponent } from 'preact';
 import { TickerState } from './ProjectTicker';
-import style from './style.css';
+import style from '#/ProjectTickerDebugger.css';
 
 interface DebuggerProps {
 	state: TickerState;

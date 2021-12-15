@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import style from './footer.css';
+import style from '#/Footer.css';
 
 const Footer: FunctionalComponent = () => {
 	return (
