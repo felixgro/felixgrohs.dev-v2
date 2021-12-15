@@ -2,7 +2,7 @@
 
 Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
 
-## Key improvements 🚀
+## Improvements 🚀
 - Pre-render components at build time to support disabled js and improve FCP
 - Serverless function for fetching projects directly from my github profile
 - Client-side caching to minimize requests
