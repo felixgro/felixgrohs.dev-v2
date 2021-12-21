@@ -1,23 +1,23 @@
-import { useRef, useEffect, useCallback } from 'preact/hooks';
+import { useRef, useEffect } from 'preact/hooks';
 
 const useAnimationFrame = (handler: () => void) => {
     const frame = useRef<number | null>(null);
 
-    const frameHandler = useCallback(() => {
+    const start = () => {
         frame.current = window.requestAnimationFrame(frameHandler);
-        handler();
-    }, [handler]);
+    };
 
-    const start = useCallback(() => {
-        frame.current = window.requestAnimationFrame(frameHandler);
-    }, [frameHandler]);
-
-    const stop = useCallback(() => {
+    const stop = () => {
         if (frame.current) {
             window.cancelAnimationFrame(frame.current);
             frame.current = null;
         }
-    }, [frame.current]);
+    };
+
+    const frameHandler = () => {
+        frame.current = window.requestAnimationFrame(frameHandler);
+        handler();
+    };
 
     useEffect(() => {
         return () => stop();
