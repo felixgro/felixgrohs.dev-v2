@@ -15,7 +15,7 @@ const useAnimationFrame = (handler: () => void, inputs: Inputs) => {
     };
 
     const frameHandler = useCallback(() => {
-        frame.current = window.requestAnimationFrame(frameHandler);
+        start();
         handler();
     }, inputs);
 
