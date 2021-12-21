@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'preact/hooks';
+import { useRef, useEffect, useCallback, Inputs } from 'preact/hooks';
 
-const useAnimationFrame = (handler: () => void) => {
+const useAnimationFrame = (handler: () => void, inputs: Inputs) => {
     const frame = useRef<number | null>(null);
 
     const start = () => {
@@ -14,10 +14,10 @@ const useAnimationFrame = (handler: () => void) => {
         }
     };
 
-    const frameHandler = () => {
+    const frameHandler = useCallback(() => {
         frame.current = window.requestAnimationFrame(frameHandler);
         handler();
-    };
+    }, inputs);
 
     useEffect(() => {
         return () => stop();

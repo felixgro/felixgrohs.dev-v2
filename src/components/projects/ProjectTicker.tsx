@@ -54,7 +54,7 @@ const ProjectTicker: FunctionalComponent<TickerProps> = ({
 			}
 			return curr + tickerConfig.speed;
 		});
-	});
+	}, [state, getBcrs]);
 
 	const projectClickHandler = useCallback(
 		(project: Project, el: HTMLElement) => {
