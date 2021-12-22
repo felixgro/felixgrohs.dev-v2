@@ -17,7 +17,8 @@ interface ViewRect {
 }
 
 const AnimatedFocus: FunctionalComponent = () => {
-	if (typeof window === 'undefined') {
+	if (typeof window === 'undefined' || !('animate' in HTMLElement.prototype)) {
+		console.warn('AnimatedFocus: not supported');
 		return <></>;
 	}
 
@@ -25,19 +26,6 @@ const AnimatedFocus: FunctionalComponent = () => {
 	const indicatorRef = useRef<HTMLDivElement>(null);
 	const usedKey = useRef(false);
 	const { width } = useWindowSize();
-
-	const isValidFocusTarget = useCallback((el: Element | Node): boolean => {
-		if (
-			el &&
-			el !== document &&
-			el.nodeName !== 'HTML' &&
-			el.nodeName !== 'BODY' &&
-			'focus' in el
-		) {
-			return true;
-		}
-		return false;
-	}, []);
 
 	const focusRect = useMemo<ViewRect | null>(() => {
 		if (!focusedElement || !indicatorRef.current) {
@@ -85,7 +73,7 @@ const AnimatedFocus: FunctionalComponent = () => {
 		[focusRect]
 	);
 
-	const focusOutHandler = useCallback((e: FocusEvent) => {
+	const focusOutHandler = (e: FocusEvent) => {
 		if (!e.relatedTarget && indicatorRef.current) {
 			setFocusedElement(null);
 			Object.assign(indicatorRef.current.style, {
@@ -95,28 +83,38 @@ const AnimatedFocus: FunctionalComponent = () => {
 				transform: 'translateX(0) translateY(0)',
 			});
 		}
-	}, []);
+	};
 
-	const focusInHandler = useCallback(
-		(e: FocusEvent) => {
-			const target = e.target as HTMLElement;
-			if (usedKey.current && isValidFocusTarget(target)) {
-				setFocusedElement(target);
-			}
-		},
-		[usedKey.current]
-	);
+	const focusInHandler = (e: FocusEvent) => {
+		const target = e.target as HTMLElement;
+		if (usedKey.current && isValidFocusTarget(target)) {
+			setFocusedElement(target);
+		}
+	};
 
-	const keyDownHandler = useCallback((e: KeyboardEvent) => {
+	const keyDownHandler = (e: KeyboardEvent) => {
 		if (e.metaKey || e.ctrlKey || e.altKey) {
 			return;
 		}
 		usedKey.current = true;
-	}, []);
+	};
 
-	const abortKeyboardFocus = useCallback(() => {
+	const abortKeyboardFocus = () => {
 		usedKey.current = false;
-	}, []);
+	};
+
+	const isValidFocusTarget = (el: Element | Node): boolean => {
+		if (
+			el &&
+			el !== document &&
+			el.nodeName !== 'HTML' &&
+			el.nodeName !== 'BODY' &&
+			'focus' in el
+		) {
+			return true;
+		}
+		return false;
+	};
 
 	useEffect(() => {
 		if (!focusedElement || !indicatorRef.current) {
@@ -161,7 +159,7 @@ const AnimatedFocus: FunctionalComponent = () => {
 				position: 'absolute',
 				pointerEvents: 'none',
 				inset: 0,
-				zIndex: 10000,
+				zIndex: 999999999,
 			}}
 		>
 			<div
