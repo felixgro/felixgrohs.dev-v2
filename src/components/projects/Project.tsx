@@ -1,23 +1,23 @@
 import { FunctionalComponent, h } from 'preact';
-import { useState, useMemo, useEffect } from 'preact/hooks';
+import { useState, useMemo, useEffect, useRef } from 'preact/hooks';
 import useServerlessRequest from '@/hooks/useServerlessRequest';
-import ProjectTicker, { TickerState } from './ProjectTicker';
-import { Project as ProjectType } from './ProjectItem';
-import ProjectTickerDebugger from './ProjectTickerDebugger';
-import ProjectDialog from './ProjectDialog';
-import TabFocusTarget from '../shared/TabFocusTarget';
-import ProjectFallback from './ProjectFallback';
+import Ticker, { TickerState } from '@/components/shared/Ticker';
+import ProjectItem, { Project } from '@/components/projects/ProjectItem';
+import ProjectDialog from '@/components/projects/ProjectDialog';
+import ProjectFallback from '@/components/projects/ProjectFallback';
+import TabFocusTarget from '@/components/shared/TabFocusTarget';
 import style from '#/Project.css';
 import stylePI from '#/ProjectItem.css';
+import ProjectContainer from './ProjectContainer';
 
-const Project: FunctionalComponent = () => {
-	const response = useServerlessRequest<ProjectType[]>('getProjects');
-	const projects = useMemo<ProjectType[] | undefined>(() => {
+const ProjectTicker: FunctionalComponent = () => {
+	const response = useServerlessRequest<Project[]>('getProjects');
+	const projects = useMemo<Project[] | undefined>(() => {
 		return response.data;
 	}, [response]);
 
 	const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>();
-	const selectedProject = useMemo<ProjectType | undefined>(() => {
+	const selectedProject = useMemo<Project | undefined>(() => {
 		if (selectedProjectId === undefined) {
 			return undefined;
 		}
@@ -25,6 +25,9 @@ const Project: FunctionalComponent = () => {
 	}, [selectedProjectId, projects]);
 
 	const [state, setState] = useState<TickerState>('idle');
+
+	const projectClickHandler = (project: Project) => console.log('project clicked:', project);
+	const tabTriggerHandler = () => console.log('tab trigger');
 
 	useEffect(() => {
 		setState('scrolling');
@@ -36,44 +39,24 @@ const Project: FunctionalComponent = () => {
 	}
 
 	return (
-		<TabFocusTarget
-			onTrigger={() => {
-				console.log('hi');
-			}}
-		>
-			<div class={style.projectWrapper}>
-				<ProjectDialog project={selectedProject} />
-				<ProjectTickerDebugger state={state} />
-				<div class={style.projects}>
-					<ProjectTicker
-						state={state}
-						projects={projects}
-						onProjectClicked={(proj) => {
-							setState('centering');
-							requestAnimationFrame(() => {
-								const prevSelected = document.querySelectorAll(
-									`.${stylePI.projectItemActive}`
-								);
-								const newSelected = document.querySelectorAll(
-									`[data-project-id='${proj.id}']`
-								);
-								prevSelected?.forEach((el) =>
-									el.classList.remove(stylePI.projectItemActive)
-								);
-								newSelected?.forEach((el) =>
-									el.classList.add(stylePI.projectItemActive)
-								);
-							});
-						}}
-						onProjectCentered={(proj) => {
-							setState('paused');
-							setSelectedProjectId(proj.id);
-						}}
-					/>
-				</div>
-			</div>
-		</TabFocusTarget>
+		<aside class={style.projectWrapper} aria-label="Selection of projects">
+			<TabFocusTarget onTrigger={tabTriggerHandler} label="Start project browsing" />
+			<ProjectDialog project={selectedProject} />
+
+			<Ticker
+				state={state}
+				speed={1}
+				centeringSpeed={0.8}
+				centeringDurationMax={500}
+				centeringEase="ease-out"
+				marginFactor={1.5}
+				marginMin={600}
+				debug={true}
+			>
+				<ProjectContainer projects={projects} onProjectClick={projectClickHandler} />
+			</Ticker>
+		</aside>
 	);
 };
 
-export default Project;
+export default ProjectTicker;

@@ -13,13 +13,17 @@ export interface Project {
 	size: number;
 }
 
+export type ProjectClickHandler = (project: Project, el: HTMLElement) => void;
+
 interface ProjectItemProps {
 	project: Project;
-	onClick: (project: Project, el: HTMLElement) => void;
+	onClick?: ProjectClickHandler;
 }
 
 const ProjectItem: FunctionalComponent<ProjectItemProps> = ({ project, onClick }) => {
-	const handleClickEvent = (e: Event) => onClick(project, e.target as HTMLElement);
+	const handleClickEvent = (e: Event) => {
+		onClick?.(project, e.target as HTMLElement);
+	};
 
 	return (
 		<div class={style.projectItem} onClick={handleClickEvent} data-project-id={project.id}>

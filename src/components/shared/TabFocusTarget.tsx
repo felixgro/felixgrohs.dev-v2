@@ -5,22 +5,23 @@ interface TabFocusTargetProps {
 	onTrigger?: () => void;
 }
 
-const TabFocusTarget: FunctionalComponent<TabFocusTargetProps> = ({ children, ...props }) => {
+const TabFocusTarget: FunctionalComponent<TabFocusTargetProps> = ({ label, onTrigger }) => {
 	return (
 		<button
-			onClick={props.onTrigger}
-			tabIndex={0}
+			onClick={onTrigger}
+			aria-label={label}
 			style={{
 				border: 'none',
+				position: 'absolute',
+				height: '100%',
+				width: '100%',
 				padding: 0,
 				margin: 0,
 				background: 'none',
-				pointerEvents: 'none !important',
+				pointerEvents: 'none',
 				zIndex: 100000,
 			}}
-		>
-			{children}
-		</button>
+		></button>
 	);
 };
 
