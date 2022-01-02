@@ -1,7 +1,7 @@
 import { RefObject } from 'preact';
 import { useState, useEffect, Inputs } from 'preact/hooks';
 
-const useElementSize = <E extends HTMLElement>(ref: RefObject<E>, deps: Inputs) => {
+const useElementSize = <T extends HTMLElement | HTMLElement[]>(ref: RefObject<T>, deps?: Inputs) => {
     const [size, setSize] = useState({
         width: 0,
         height: 0,
@@ -9,14 +9,15 @@ const useElementSize = <E extends HTMLElement>(ref: RefObject<E>, deps: Inputs) 
 
     useEffect(() => {
         const updateSize = () => {
+            const el = (Array.isArray(ref.current) ? ref.current[0] : ref.current) as HTMLElement;
             setSize({
-                width: ref.current?.offsetWidth ?? 0,
-                height: ref.current?.offsetHeight ?? 0,
+                width: el.offsetWidth ?? 0,
+                height: el.offsetHeight ?? 0,
             });
         };
 
         updateSize();
-    }, [ref, ...deps]);
+    }, [ref, ...(deps ?? [])]);
 
     return size;
 }

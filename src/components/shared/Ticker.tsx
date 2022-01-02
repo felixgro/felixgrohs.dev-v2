@@ -1,4 +1,4 @@
-import { h, Ref, FunctionalComponent } from 'preact';
+import { h, FunctionalComponent } from 'preact';
 import TickerDebugger from '@/components/shared/TickerDebugger';
 import { useState, useEffect, useRef, useLayoutEffect } from 'preact/hooks';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
@@ -8,7 +8,7 @@ import useElementSize from '@/hooks/useElementSize';
 
 export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
 
-interface TickerProps {
+export interface TickerProps {
 	state: TickerState; // current state of the ticker
 	speed?: number; // automatic scrolling speed
 	centeringSpeed?: number; // speed of centering the clicked project
@@ -17,16 +17,8 @@ interface TickerProps {
 	marginFactor?: number; // overlapping distance factor for both sides of the screen
 	marginMin?: number; // minimum overlapping distance for mobile
 	debug?: boolean; // show debugging info
+	onClick?: (e: PointerEvent) => void; // click handler
 }
-
-const defaultProps = {
-	speed: 1,
-	centeringSpeed: 0.8,
-	centeringEase: 'ease-out',
-	centeringDurationMax: 500,
-	marginFactor: 1.5,
-	marginMin: 600,
-};
 
 const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props }) => {
 	const [scrollPos, setScrollPos] = useState(0);
@@ -39,6 +31,21 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 	const windowSize = useWindowSize();
 	const viewSize = useElementSize(viewRef, [windowSize.width]);
 	const wrapperSize = useElementSize(wrapperRef, [childCount]);
+	const childSize = useElementSize(childRefs);
+
+	const tickerAnimation = useAnimationFrame(() => {
+		if (props.state !== 'scrolling') return;
+		// const { view, wrapper, container } = getBcrs();
+		// if (!view || !wrapper || !container) return;
+
+		// setScrollPos((curr) => {
+		// 	if (wrapper.width - curr - view.width < view.width * tickerConfig.marginFactor * 0.5) {
+		// 		appendContainer();
+		// 		return curr - container.width;
+		// 	}
+		// 	return curr + tickerConfig.speed;
+		// });
+	}, [props.state, childSize, wrapperSize, viewSize]);
 
 	useEffect(() => {
 		if (childCount === 1) return;
@@ -46,36 +53,23 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 	}, [wrapperSize, viewSize]);
 
 	useLayoutEffect(() => {
-		if (viewSize.width === 0) return;
-		const childWidth = childRefs.current[0]?.clientWidth ?? Number.POSITIVE_INFINITY;
-		let margin = viewSize.width * (props.marginFactor ?? defaultProps.marginFactor);
+		if (viewSize.width === 0 || !childRefs.current[0]) return;
+		const childWidth = childRefs.current[0].clientWidth;
+		const margin = viewSize.width * props.marginFactor!;
 		let count = 0;
 
-		for (let w = 0; w < viewSize.width + 2 * margin; w += childWidth) {
-			count++;
-		}
-
+		for (let w = 0; w < viewSize.width + 2 * margin; w += childWidth) count++;
 		if (count < 2) count = 2;
 
 		setChildCount(count);
 	}, [viewSize, childRefs]);
 
 	return (
-		<div
-			class={style.projectTicker}
-			ref={viewRef}
-			aria-hidden="true"
-			onClick={(e) => {
-				console.log(e);
-			}}
-		>
-			<TickerDebugger state={props.state} />
+		<div class={style.projectTicker} ref={viewRef} aria-hidden="true">
 			<div
 				ref={wrapperRef}
 				class={style.projectContainerWrapper}
-				style={{
-					transform: `translateX(${scrollPos * -1}px)`,
-				}}
+				style={{ transform: `translateX(${scrollPos * -1}px)` }}
 			>
 				{Array.from({ length: childCount }).map((_, i) => (
 					<div
@@ -89,8 +83,18 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 					</div>
 				))}
 			</div>
+			<TickerDebugger state={props.state} />
 		</div>
 	);
+};
+
+Ticker.defaultProps = {
+	speed: 1,
+	centeringSpeed: 0.8,
+	centeringEase: 'ease-out',
+	centeringDurationMax: 500,
+	marginFactor: 1.5,
+	marginMin: 600,
 };
 
 export default Ticker;

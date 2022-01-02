@@ -19,11 +19,9 @@ const useCache = <T>(key: string, opts?: CacheOptions) => {
             // console.debug(`Cache age: ${cacheAge / 1000}s`);
 
             if ((opts?.ttl || 0) > cacheAge) {
-                // return cached value
                 return cacheValue.data;
             }
 
-            // cache expired, remove it
             // console.debug('Cache expired');
             localStorage.removeItem(key);
         }

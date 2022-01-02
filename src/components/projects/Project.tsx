@@ -29,6 +29,10 @@ const ProjectTicker: FunctionalComponent = () => {
 	const projectClickHandler = (project: Project) => console.log('project clicked:', project);
 	const tabTriggerHandler = () => console.log('tab trigger');
 
+	const tickerClickHandler = (e: PointerEvent) => {
+		console.log(e);
+	};
+
 	useEffect(() => {
 		setState('scrolling');
 		return () => setState('idle');
@@ -52,6 +56,7 @@ const ProjectTicker: FunctionalComponent = () => {
 				marginFactor={1.5}
 				marginMin={600}
 				debug={true}
+				onClick={tickerClickHandler}
 			>
 				<ProjectContainer projects={projects} onProjectClick={projectClickHandler} />
 			</Ticker>
