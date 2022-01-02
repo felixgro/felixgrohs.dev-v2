@@ -1,15 +1,15 @@
-import { h, FunctionalComponent } from 'preact';
-import TickerDebugger from '@/components/shared/TickerDebugger';
-import { useState, useEffect, useRef, useLayoutEffect } from 'preact/hooks';
-import useAnimationFrame from '@/hooks/useAnimationFrame';
+import { h, FunctionalComponent, RefCallback } from 'preact';
+import Repeat from '@/components/shared/Repeat';
 import useWindowSize from '@/hooks/useWindowSize';
 import style from '#/ProjectTicker.css';
 import useElementSize from '@/hooks/useElementSize';
+import { useState, useEffect, useRef, useLayoutEffect, useMemo, StateUpdater } from 'preact/hooks';
 
 export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
 
 export interface TickerProps {
-	state: TickerState; // current state of the ticker
+	scroll: number;
+	setScroll?: StateUpdater<number>;
 	speed?: number; // automatic scrolling speed
 	centeringSpeed?: number; // speed of centering the clicked project
 	centeringEase?: string; // easing function for centering
@@ -17,13 +17,10 @@ export interface TickerProps {
 	marginFactor?: number; // overlapping distance factor for both sides of the screen
 	marginMin?: number; // minimum overlapping distance for mobile
 	debug?: boolean; // show debugging info
-	onClick?: (e: PointerEvent) => void; // click handler
 }
 
 const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props }) => {
-	const [scrollPos, setScrollPos] = useState(0);
 	const [childCount, setChildCount] = useState(1);
-
 	const childRefs = useRef<HTMLDivElement[]>([]);
 	const viewRef = useRef<HTMLDivElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
@@ -33,24 +30,19 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 	const wrapperSize = useElementSize(wrapperRef, [childCount]);
 	const childSize = useElementSize(childRefs);
 
-	const tickerAnimation = useAnimationFrame(() => {
-		if (props.state !== 'scrolling') return;
-		// const { view, wrapper, container } = getBcrs();
-		// if (!view || !wrapper || !container) return;
+	const translateX = useMemo(() => {
+		return { transform: `translateX(${props.scroll * -1}px)` };
+	}, [props.scroll]);
 
-		// setScrollPos((curr) => {
-		// 	if (wrapper.width - curr - view.width < view.width * tickerConfig.marginFactor * 0.5) {
-		// 		appendContainer();
-		// 		return curr - container.width;
-		// 	}
-		// 	return curr + tickerConfig.speed;
-		// });
-	}, [props.state, childSize, wrapperSize, viewSize]);
+	const assignChildRef: RefCallback<HTMLDivElement> = (ref): void => {
+		if (!ref) return;
+		childRefs.current = [...childRefs.current, ref];
+	};
 
 	useEffect(() => {
-		if (childCount === 1) return;
-		setScrollPos(wrapperSize.width / 2 - viewSize.width / 2);
-	}, [wrapperSize, viewSize]);
+		if (!props.scroll) return;
+		// console.log(props.scroll);
+	}, [props.scroll]);
 
 	useLayoutEffect(() => {
 		if (viewSize.width === 0 || !childRefs.current[0]) return;
@@ -62,39 +54,36 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 		if (count < 2) count = 2;
 
 		setChildCount(count);
+		props.setScroll?.(wrapperSize.width / 2 - viewSize.width / 2);
 	}, [viewSize, childRefs]);
 
 	return (
-		<div class={style.projectTicker} ref={viewRef} aria-hidden="true">
+		<div ref={viewRef} style={{ overflowX: 'hidden' }}>
 			<div
 				ref={wrapperRef}
-				class={style.projectContainerWrapper}
-				style={{ transform: `translateX(${scrollPos * -1}px)` }}
+				style={{
+					position: 'relative',
+					display: 'flex',
+					width: 'max-content',
+					willChange: 'transform',
+					...translateX,
+				}}
 			>
-				{Array.from({ length: childCount }).map((_, i) => (
-					<div
-						key={i}
-						ref={(r) => {
-							if (!r) return;
-							childRefs.current = [...childRefs.current, r];
-						}}
-					>
-						{child}
-					</div>
-				))}
+				<Repeat amount={childCount}>
+					{(idx) => (
+						<div key={idx} ref={assignChildRef}>
+							{child}
+						</div>
+					)}
+				</Repeat>
 			</div>
-			<TickerDebugger state={props.state} />
 		</div>
 	);
 };
 
 Ticker.defaultProps = {
-	speed: 1,
-	centeringSpeed: 0.8,
-	centeringEase: 'ease-out',
-	centeringDurationMax: 500,
-	marginFactor: 1.5,
 	marginMin: 600,
+	marginFactor: 1.5,
 };
 
 export default Ticker;

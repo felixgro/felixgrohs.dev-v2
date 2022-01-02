@@ -1,20 +1,26 @@
 import { FunctionalComponent, h } from 'preact';
-import { useState, useMemo, useEffect, useRef } from 'preact/hooks';
-import useServerlessRequest from '@/hooks/useServerlessRequest';
-import Ticker, { TickerState } from '@/components/shared/Ticker';
-import ProjectItem, { Project } from '@/components/projects/ProjectItem';
+import { Project } from '@/components/projects/ProjectItem';
 import ProjectDialog from '@/components/projects/ProjectDialog';
 import ProjectFallback from '@/components/projects/ProjectFallback';
 import TabFocusTarget from '@/components/shared/TabFocusTarget';
-import style from '#/Project.css';
-import stylePI from '#/ProjectItem.css';
 import ProjectContainer from './ProjectContainer';
+import Ticker from '@/components/shared/Ticker';
+import useAnimationFrame from '@/hooks/useAnimationFrame';
+import useServerlessRequest from '@/hooks/useServerlessRequest';
+import { useState, useMemo, useEffect } from 'preact/hooks';
+import style from '#/Project.css';
 
 const ProjectTicker: FunctionalComponent = () => {
 	const response = useServerlessRequest<Project[]>('getProjects');
 	const projects = useMemo<Project[] | undefined>(() => {
 		return response.data;
 	}, [response]);
+
+	const [scroll, setScroll] = useState(0);
+
+	const tickerAnimation = useAnimationFrame(() => {
+		setScroll((curr) => curr + 1);
+	}, []);
 
 	const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>();
 	const selectedProject = useMemo<Project | undefined>(() => {
@@ -24,42 +30,38 @@ const ProjectTicker: FunctionalComponent = () => {
 		return projects?.find((project) => project.id === selectedProjectId);
 	}, [selectedProjectId, projects]);
 
-	const [state, setState] = useState<TickerState>('idle');
-
 	const projectClickHandler = (project: Project) => console.log('project clicked:', project);
 	const tabTriggerHandler = () => console.log('tab trigger');
 
-	const tickerClickHandler = (e: PointerEvent) => {
-		console.log(e);
-	};
-
 	useEffect(() => {
-		setState('scrolling');
-		return () => setState('idle');
+		// tickerAnimation.start();
 	}, []);
-
-	if (!projects) {
-		return <ProjectFallback />;
-	}
 
 	return (
 		<aside class={style.projectWrapper} aria-label="Selection of projects">
 			<TabFocusTarget onTrigger={tabTriggerHandler} label="Start project browsing" />
 			<ProjectDialog project={selectedProject} />
-
-			<Ticker
-				state={state}
-				speed={1}
-				centeringSpeed={0.8}
-				centeringDurationMax={500}
-				centeringEase="ease-out"
-				marginFactor={1.5}
-				marginMin={600}
-				debug={true}
-				onClick={tickerClickHandler}
-			>
-				<ProjectContainer projects={projects} onProjectClick={projectClickHandler} />
-			</Ticker>
+			{projects ? (
+				<div
+					aria-hidden={true}
+					style={{
+						position: 'absolute',
+						height: '100%',
+						width: '100%',
+						display: 'flex',
+						alignItems: 'center',
+					}}
+				>
+					<Ticker scroll={scroll} setScroll={setScroll}>
+						<ProjectContainer
+							projects={projects}
+							onProjectClick={projectClickHandler}
+						/>
+					</Ticker>
+				</div>
+			) : (
+				<ProjectFallback />
+			)}
 		</aside>
 	);
 };
