@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from 'preact';
 import Intro from '@/components/static/Intro';
 import Header from '@/components/static/Header';
 import Footer from '@/components/static/Footer';
-import ProjectContainer from '@/components/projects/Project';
+import Projects from '@/components/projects/Project';
 import AnimatedFocus from '@/components/shared/AnimatedFocus';
 
 const App: FunctionalComponent = () => {
@@ -10,7 +10,7 @@ const App: FunctionalComponent = () => {
 		<div id="app">
 			<Header />
 			<Intro />
-			<ProjectContainer />
+			<Projects />
 			<Footer />
 			<AnimatedFocus />
 		</div>
