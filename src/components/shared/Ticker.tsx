@@ -1,7 +1,6 @@
 import { h, FunctionalComponent, RefCallback } from 'preact';
 import Repeat from '@/components/shared/Repeat';
 import useWindowSize from '@/hooks/useWindowSize';
-import style from '#/ProjectTicker.css';
 import useElementSize from '@/hooks/useElementSize';
 import { useState, useEffect, useRef, useLayoutEffect, useMemo, StateUpdater } from 'preact/hooks';
 
