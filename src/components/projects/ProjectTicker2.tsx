@@ -9,15 +9,16 @@ import useAnimationFrame from '@/hooks/useAnimationFrame';
 import style from '#/Project.css';
 
 interface ProjectTickerProps {
-	projects?: Project[];
+	projects: Project[];
+	vel?: number;
 }
 
-const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects }) => {
+const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects, vel }) => {
 	if (!projects) return <></>;
 	const [scroll, setScroll] = useState(0);
 
 	const tickerAnimation = useAnimationFrame(() => {
-		setScroll((curr) => curr + 1);
+		setScroll((curr) => curr + vel!);
 	}, []);
 
 	const [selectedProjectId, setSelectedProjectId] = useState<number | undefined>();
@@ -37,20 +38,24 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({ projects }) =>
 	};
 
 	useEffect(() => {
-		// tickerAnimation.start();
+		tickerAnimation.start();
 	}, []);
 
 	return (
 		<>
-			<ProjectDialog project={selectedProject} />
 			<TabFocusTarget onTrigger={tabTriggerHandler} label="Start project browsing" />
 			<div class={style.projectTicker} aria-hidden={true}>
 				<Ticker scroll={scroll} setScroll={setScroll}>
 					<ProjectContainer projects={projects} onProjectClick={projectClickHandler} />
 				</Ticker>
 			</div>
+			<ProjectDialog project={selectedProject} />
 		</>
 	);
+};
+
+ProjectTicker.defaultProps = {
+	vel: 1,
 };
 
 export default ProjectTicker;

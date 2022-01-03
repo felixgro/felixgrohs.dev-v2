@@ -1,73 +1,81 @@
 import { h, FunctionalComponent, RefCallback } from 'preact';
-import Repeat from '@/components/shared/Repeat';
+import { useState, useEffect, useRef, useLayoutEffect, StateUpdater } from 'preact/hooks';
 import useWindowSize from '@/hooks/useWindowSize';
-import useElementSize from '@/hooks/useElementSize';
-import { useState, useEffect, useRef, useLayoutEffect, useMemo, StateUpdater } from 'preact/hooks';
-
-export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
+import useBcr from '@/hooks/useElementSize';
+import Repeat from '@/components/shared/Repeat';
+import style from '#/Ticker.css';
 
 export interface TickerProps {
 	scroll: number;
 	setScroll?: StateUpdater<number>;
-	speed?: number; // automatic scrolling speed
-	centeringSpeed?: number; // speed of centering the clicked project
-	centeringEase?: string; // easing function for centering
-	centeringDurationMax?: number; // max duration of centering the clicked project (can increase specified centeringSpeed)
 	marginFactor?: number; // overlapping distance factor for both sides of the screen
 	marginMin?: number; // minimum overlapping distance for mobile
-	debug?: boolean; // show debugging info
 }
 
+// This component should receive a single child, which get's cloned to satisfy all
+// specified margin properties. Then it automatically swaps components based on the
+// current scroll position to create an infinite scrolling effect in a memory safe fashion.
 const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props }) => {
 	const [childCount, setChildCount] = useState(1);
-	const childRefs = useRef<HTMLDivElement[]>([]);
-	const viewRef = useRef<HTMLDivElement>(null);
-	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	const windowSize = useWindowSize();
-	const viewSize = useElementSize(viewRef, [windowSize.width]);
-	const wrapperSize = useElementSize(wrapperRef, [childCount]);
-	const childSize = useElementSize(childRefs);
 
-	const translateX = useMemo(() => {
-		return { transform: `translateX(${props.scroll * -1}px)` };
-	}, [props.scroll]);
+	const viewRef = useRef<HTMLDivElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const childRefs = useRef<HTMLDivElement[]>([]);
 
+	const viewRect = useBcr(viewRef, [windowSize.width]);
+	const wrapperRect = useBcr(wrapperRef, [childCount, props.scroll]);
+	const childRect = useBcr(childRefs);
+
+	// Keep a reference to all children within the wrapper
 	const assignChildRef: RefCallback<HTMLDivElement> = (ref): void => {
 		if (!ref) return;
 		childRefs.current = [...childRefs.current, ref];
 	};
 
+	const appendContainer = () => {
+		// if (!wrapperRef.current?.firstChild) return;
+		// const firstContainer = wrapperRef.current?.removeChild(wrapperRef.current?.firstChild);
+		// if (firstContainer) {
+		// 	wrapperRef.current?.appendChild(firstContainer);
+		// }
+	};
+
+	const prependContainer = () => {};
+
+	// When first initialized, the wrapper gets only one child in order
+	// to calculate it's width from within a layout effect, which will
+	// inject more children (>1) into the wrapper when done.
 	useEffect(() => {
-		if (!props.scroll) return;
-		// console.log(props.scroll);
+		if (wrapperRect.width === childRect.width) return;
+		props.setScroll?.(wrapperRect.width / 2 - childRect.width / 2);
+	}, [wrapperRect.width, childRect.width]);
+
+	// Renders current scroll position on dom if wrapper exists.
+	useEffect(() => {
+		wrapperRef.current?.style.setProperty(`transform`, `translateX(${props.scroll * -1}px)`);
+
+		const distanceToEnd = wrapperRect.x + wrapperRect.width - viewRect.width - viewRect.x;
+
+		if (distanceToEnd < viewRect.width * props.marginFactor!) {
+			appendContainer();
+		}
 	}, [props.scroll]);
 
+	// Calculates the number of children to inject into the wrapper
+	// based on specified marginFactor and marginMin.
 	useLayoutEffect(() => {
-		if (viewSize.width === 0 || !childRefs.current[0]) return;
+		if (viewRect.width === 0 || !childRefs.current[0]) return;
 		const childWidth = childRefs.current[0].clientWidth;
-		const margin = viewSize.width * props.marginFactor!;
-		let count = 0;
-
-		for (let w = 0; w < viewSize.width + 2 * margin; w += childWidth) count++;
-		if (count < 2) count = 2;
-
-		setChildCount(count);
-		props.setScroll?.(wrapperSize.width / 2 - viewSize.width / 2);
-	}, [viewSize, childRefs]);
+		const margin = viewRect.width * props.marginFactor!;
+		const amount = Math.ceil((viewRect.width + 2 * margin) / childWidth);
+		setChildCount(Math.max(amount, 2));
+	}, [viewRect, childRefs]);
 
 	return (
-		<div ref={viewRef} style={{ overflowX: 'hidden' }}>
-			<div
-				ref={wrapperRef}
-				style={{
-					position: 'relative',
-					display: 'flex',
-					width: 'max-content',
-					willChange: 'transform',
-					...translateX,
-				}}
-			>
+		<div ref={viewRef} class={style.view}>
+			<div ref={wrapperRef} class={style.wrapper}>
 				<Repeat amount={childCount}>
 					{(idx) => (
 						<div key={idx} ref={assignChildRef}>

@@ -1,0 +1,11 @@
+.view {
+	overflow: hidden;
+}
+
+.wrapper {
+	position: relative;
+	display: flex;
+	width: max-content;
+	will-change: transform;
+	transition: transform 120ms linear;
+}

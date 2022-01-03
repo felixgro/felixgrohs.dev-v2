@@ -1,19 +1,15 @@
 import { RefObject } from 'preact';
-import { useState, useEffect, Inputs } from 'preact/hooks';
+import { useState, useEffect, Inputs, useLayoutEffect } from 'preact/hooks';
 
-const useElementSize = <T extends HTMLElement | HTMLElement[]>(ref: RefObject<T>, deps?: Inputs) => {
-    const [size, setSize] = useState({
-        width: 0,
-        height: 0,
-    });
+const useBcr = <T extends HTMLElement | HTMLElement[]>(ref: RefObject<T>, deps?: Inputs) => {
+    const [size, setSize] = useState<DOMRect>(new DOMRect());
 
     useEffect(() => {
         const updateSize = () => {
             const el = (Array.isArray(ref.current) ? ref.current[0] : ref.current) as HTMLElement;
-            setSize({
-                width: el.offsetWidth ?? 0,
-                height: el.offsetHeight ?? 0,
-            });
+            if (!el) return;
+            getComputedStyle(el).width;
+            setSize(el.getBoundingClientRect());
         };
 
         updateSize();
@@ -22,4 +18,4 @@ const useElementSize = <T extends HTMLElement | HTMLElement[]>(ref: RefObject<T>
     return size;
 }
 
-export default useElementSize;
+export default useBcr;
