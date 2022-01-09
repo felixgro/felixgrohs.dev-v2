@@ -4,16 +4,16 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 
 ## Improvements 🚀
 - Pre-render components at build time to support disabled js and improve FCP
-- Serverless function for fetching projects directly from my github profile
-- Client-side caching to minimize requests
-- PWA support by using a Service Worker
+- Serverless function for fetching projects directly from a github profile
+- Client-side caching to minimize serverless requests
 - Improved animation performance
-- Modular CSS
+- PWA support
 
 ## Project Structure
 | Directory | Alias | Description |
 | :----- | :----- | :----- |
-|`functions/`||serverless functions|
+|`netlify/`||serverless functions|
+|`tests/`|`#/`|unit tests|
 |`src/`|`@/`|frontend files|
 |`src/assets/`||static assets|
 |`src/components/`||components|
@@ -38,9 +38,9 @@ Go in the cloned directory and install all dependencies using your package manag
 cd myClone
 npm i
 ```
-Boot up a development server along with all serverless functions:
+Boot up a development server with [netlify-cli](https://github.com/netlify/cli):
 ```bash
-npm run dev:all
+npm run dev:netlify
 ```
 
 ### CLI Commands
