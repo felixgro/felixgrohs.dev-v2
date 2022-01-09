@@ -21,7 +21,6 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	marginFactor,
 }) => {
 	if (!projects) return <></>;
-
 	const [scroll, setScroll] = useState(0);
 	const [selectedProject, setSelectedProject] = useState<Project>();
 	const tickerContainerRef = useRef<HTMLDivElement>(null);
@@ -36,12 +35,13 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	});
 
 	const clickProjectHandler = (project: Project, el: Element) => {
+		tickerAnimation.stop();
+
 		const view = el.parentElement!.parentElement!.parentElement!.parentElement!,
 			viewBcr = view.getBoundingClientRect(),
 			elBcr = el.getBoundingClientRect(),
 			diff = elBcr.x + elBcr.width / 2 - (viewBcr.x + viewBcr.width / 2);
 
-		tickerAnimation.stop();
 		centerAnimation.animateTo(scroll + diff);
 		setSelectedProject(project);
 	};
