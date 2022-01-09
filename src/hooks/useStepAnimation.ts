@@ -1,4 +1,4 @@
-import { useState, StateUpdater, useRef } from 'preact/hooks';
+import { useRef, useMemo, StateUpdater } from 'preact/hooks';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
 
 // https://spicyyoghurt.com/tools/easing-functions
@@ -23,9 +23,7 @@ const useStepAnimation = (state: number, stateUpdater: StateUpdater<number>, opt
             return frame.stop();
         }
 
-        console.log(opts.easing(progress, begin.current, change.current, opts.duration));
-
-        stateUpdater(() => opts.easing(progress, begin.current, change.current, opts.duration));
+        stateUpdater(() => opts.easing(progress, begin.current, change.current, 1));
     }, [begin, change, startTime, stateUpdater, opts]);
 
     return {

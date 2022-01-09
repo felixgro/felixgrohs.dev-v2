@@ -31,33 +31,19 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	}, [velocity]);
 
 	const centerAnimation = useStepAnimation(scroll, setScroll, {
-		easing: (t, b, c, d) => (c * t) / d + b,
+		easing: (p, b, c) => (c * p) / 1 + b,
 		duration: 1000,
 	});
 
-	const clickHandler = (project: Project, el: Element) => {
-		const duration = 500;
-		tickerAnimation.stop();
-
-		const wrapper = el.parentElement?.parentElement!.parentElement!,
-			view = wrapper.parentElement!,
+	const clickProjectHandler = (project: Project, el: Element) => {
+		const view = el.parentElement!.parentElement!.parentElement!.parentElement!,
 			viewBcr = view.getBoundingClientRect(),
 			elBcr = el.getBoundingClientRect(),
 			diff = elBcr.x + elBcr.width / 2 - (viewBcr.x + viewBcr.width / 2);
 
-		console.log((scroll + diff) * -1);
-		wrapper.style.transition = `all ${duration}ms ease-in-out`;
-		getComputedStyle(wrapper).transition;
-		wrapper.style.transform = `translateX(${(scroll + diff) * -1}px)`;
-
-		setTimeout(() => {
-			wrapper.style.transition = 'none';
-			getComputedStyle(wrapper).transition;
-			setScroll(scroll + diff);
-		}, duration);
-
+		tickerAnimation.stop();
+		centerAnimation.animateTo(scroll + diff);
 		setSelectedProject(project);
-		// centerAnimation.animateTo(scroll + diff);
 	};
 
 	const tabTriggerHandler = () => {
@@ -79,14 +65,12 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	}, [tickerContainerRef, selectedProject]);
 
 	useEffect(() => {
-		requestAnimationFrame(updateStyles);
-
-		if (!selectedProject) {
-			tickerAnimation.start();
+		if (selectedProject) {
+			requestAnimationFrame(updateStyles);
 			return;
 		}
 
-		// tickerAnimation.stop();
+		tickerAnimation.start();
 	}, [selectedProject]);
 
 	return (
@@ -94,7 +78,7 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 			<TabFocusTarget onTrigger={tabTriggerHandler} label="Start project browsing" />
 			<div class={style.projectTicker} aria-hidden={true} ref={tickerContainerRef}>
 				<Ticker scroll={scroll} setScroll={setScroll} marginFactor={marginFactor}>
-					<ProjectContainer projects={projects} onProjectClick={clickHandler} />
+					<ProjectContainer projects={projects} onProjectClick={clickProjectHandler} />
 				</Ticker>
 			</div>
 			<ProjectDialog project={selectedProject} />

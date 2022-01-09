@@ -30,7 +30,6 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
 
     const checkCache = useCallback(() => {
         const cachedData = cache.get();
-        console.log(requestIdleCallback);
 
         if (cachedData) {
             return setData({

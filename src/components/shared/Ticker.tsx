@@ -83,15 +83,7 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 
 	// apply scroll position to wrapper element for the visual animation
 	useEffect(() => {
-		if (!wrapperRef.current) return;
-		if (
-			wrapperRef.current.style.transition &&
-			!wrapperRef.current.style.transition.includes('none')
-		) {
-			console.log('found transition!');
-			return;
-		}
-		wrapperRef.current.style.setProperty(`transform`, `translateX(${props.scroll * -1}px)`);
+		wrapperRef.current?.style.setProperty(`transform`, `translateX(${props.scroll * -1}px)`);
 	}, [props.scroll]);
 
 	// observe start and end indicators and swap children accordingly
@@ -100,10 +92,8 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 		if (viewRect.width === 0) return;
 
 		const observerCallback: IntersectionObserverCallback = (entries) => {
-			console.count('observerCallback');
 			for (const entry of entries) {
 				if (!entry.isIntersecting) continue;
-				console.log(entry);
 				const target = entry.target as HTMLSpanElement;
 				const dir = target.dataset.indicates;
 				moveContainerTo(dir as 'start' | 'end');
