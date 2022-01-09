@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from 'preact';
 import Header from '@/components/static/Header';
 import Intro from '@/components/static/Intro';
 import Footer from '@/components/static/Footer';
-import Projects from '@/components/projects/Projects';
+import Projects from '@/components/Projects';
 import AnimatedFocus from '@/components/shared/AnimatedFocus';
 
 const App: FunctionalComponent = () => {

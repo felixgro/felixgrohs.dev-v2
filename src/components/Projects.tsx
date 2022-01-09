@@ -1,7 +1,7 @@
 import { h, FunctionalComponent } from 'preact';
 import useProjects from '@/hooks/useProjects';
-import ProjectTicker from '@/components/projects/ProjectTicker';
-import ProjectFallback from '@/components/projects/ProjectFallback';
+import ProjectTicker from '@/components/async/ProjectTicker';
+import ProjectFallback from '@/components/static/ProjectFallback';
 import style from '#/Project.css';
 
 const Projects: FunctionalComponent = () => {
@@ -10,10 +10,9 @@ const Projects: FunctionalComponent = () => {
 	return (
 		<aside class={style.projects} aria-label="Selection of projects">
 			{projects ? (
-				<ProjectTicker projects={projects} velocity={1} marginFactor={1.5} />
-			) : (
-				<ProjectFallback />
-			)}
+				<ProjectTicker projects={projects!} velocity={1} marginFactor={1.5} />
+			) : null}
+			<ProjectFallback show={!projects} />
 		</aside>
 	);
 };

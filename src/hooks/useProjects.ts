@@ -1,4 +1,4 @@
-import type { Project } from '@/components/projects/ProjectItem';
+import type { Project } from '@/components/async/ProjectTicker/ProjectItem';
 import { useMemo } from 'preact/hooks';
 import useServerlessRequest from '@/hooks/useServerlessRequest';
 

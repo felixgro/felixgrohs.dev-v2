@@ -1,12 +1,12 @@
-import type { Project } from '@/components/projects/ProjectItem';
 import { h, FunctionalComponent, Fragment } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
-import ProjectDialog from './ProjectDialog';
-import TabFocusTarget from '../shared/TabFocusTarget';
-import Ticker from '../shared/Ticker';
-import ProjectContainer from './ProjectContainer';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
 import useStepAnimation from '@/hooks/useStepAnimation';
+import type { Project } from './ProjectItem';
+import ProjectDialog from './ProjectDialog';
+import ProjectContainer from './ProjectContainer';
+import TabFocusTarget from '@/components/shared/TabFocusTarget';
+import Ticker from '@/components/shared/Ticker';
 import style from '#/Project.css';
 
 interface ProjectTickerProps {
@@ -30,8 +30,8 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	}, [velocity]);
 
 	const centerAnimation = useStepAnimation(scroll, setScroll, {
-		easing: (p, b, c) => (c * p) / 1 + b,
-		duration: 1000,
+		easing: (p, b, c, d) => -c * (p /= d) * (p - 2) + b,
+		duration: 320,
 	});
 
 	const clickProjectHandler = (project: Project, el: Element) => {
@@ -51,9 +51,9 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	};
 
 	const updateStyles = useCallback(() => {
-		tickerContainerRef
-			.current!.querySelectorAll(`.${style.projectItemActive}`)
-			.forEach((el) => el.classList.remove(style.projectItemActive));
+		tickerContainerRef.current
+			?.querySelectorAll(`.${style.projectItemActive}`)
+			?.forEach((el) => el.classList.remove(style.projectItemActive));
 
 		if (selectedProject) {
 			const projElements = tickerContainerRef.current!.querySelectorAll(
@@ -65,8 +65,9 @@ const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	}, [tickerContainerRef, selectedProject]);
 
 	useEffect(() => {
+		requestAnimationFrame(updateStyles);
+
 		if (selectedProject) {
-			requestAnimationFrame(updateStyles);
 			return;
 		}
 

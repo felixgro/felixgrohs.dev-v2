@@ -15,5 +15,5 @@
 }
 
 .projectItemActive {
-	background: green;
+	background: #aaa !important;
 }
