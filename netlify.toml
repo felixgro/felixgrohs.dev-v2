@@ -7,6 +7,7 @@
         
 [build]
     publish = "build"
+    command = "yarn build"
 
 [dev]
     command = "yarn dev"
