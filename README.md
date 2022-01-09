@@ -13,13 +13,13 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 | Directory | Alias | Description |
 | :----- | :----- | :----- |
 |`netlify/`||serverless functions|
-|`tests/`|`#/`|unit tests|
+|`tests/`||unit tests|
 |`src/`|`@/`|frontend files|
-|`src/assets/`||static assets|
-|`src/components/`||components|
-|`src/hooks/`||custom hooks|
-|`src/styles/`||css files|
-|`src/styles/modules/`|`#/`|css modules|
+| &ensp; `assets/`||static assets|
+| &ensp; `components/`||components|
+| &ensp; `hooks/`||custom hooks|
+| &ensp; `styles/`||css files|
+| &emsp; `modules/`|`#/`|css modules|
 
 ## Development
 
@@ -38,23 +38,25 @@ Go in the cloned directory and install all dependencies using your package manag
 cd myClone
 npm i
 ```
-Boot up a development server with [netlify-cli](https://github.com/netlify/cli):
+Boot up a development server:
 ```bash
-npm run dev:netlify
+npm run dev
 ```
 
 ### CLI Commands
-*   `npm install`: Install dependencies
+*   `npm install` Install dependencies
 
-*   `npm run dev`: Run a development, HMR server
+*   `npm run dev` Run development, HMR server
 
-*   `npm run serve`: Run a production-like server
+*   `npm run dev:netlify` Run development, HMR server with serverless functions
 
-*   `npm run build`: Create production-ready build
+*   `npm run serve` Run a production-like server
 
-*   `npm run lint`: Run ESLint
+*   `npm run build` Create production-ready build
 
-*   `npm run test`: Run Jest and Enzyme
+*   `npm run lint` Run ESLint
+
+*   `npm run test` Run Jest and Enzyme
 
 For detailed explanation on how things work, checkout [preact-cli](https://github.com/developit/preact-cli/blob/master/README.md).
 
