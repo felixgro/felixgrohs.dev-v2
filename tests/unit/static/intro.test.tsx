@@ -1,7 +1,7 @@
 // See: https://github.com/preactjs/enzyme-adapter-preact-pure
 import { h } from 'preact';
 import { shallow } from 'enzyme';
-import Intro from '../../src/components/static/Intro';
+import Intro from '../../../src/components/static/Intro';
 
 describe('Intro View', () => {
 	const context = shallow(<Intro />);

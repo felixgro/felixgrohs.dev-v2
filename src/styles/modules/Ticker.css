@@ -7,5 +7,4 @@
 	display: flex;
 	width: max-content;
 	will-change: transform;
-	transition: transform 120ms linear;
 }

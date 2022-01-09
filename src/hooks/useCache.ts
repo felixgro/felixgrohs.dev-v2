@@ -34,7 +34,6 @@ const useCache = <T>(key: string, opts?: CacheOptions) => {
             timestamp: Date.now(),
             data,
         }
-
         localStorage.setItem(key, JSON.stringify(cached));
     }, [key]);
 

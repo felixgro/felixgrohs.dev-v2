@@ -13,3 +13,7 @@
 	display: flex;
 	align-items: center;
 }
+
+.projectItemActive {
+	background: green;
+}

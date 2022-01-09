@@ -1,15 +1,23 @@
-import { h, FunctionalComponent, RefCallback } from 'preact';
-import { useState, useEffect, useRef, useLayoutEffect, StateUpdater } from 'preact/hooks';
+import { h, FunctionalComponent } from 'preact';
+import { insertAfter } from '@/utils/dom';
 import useWindowSize from '@/hooks/useWindowSize';
 import useBcr from '@/hooks/useElementSize';
 import Repeat from '@/components/shared/Repeat';
 import style from '#/Ticker.css';
+import {
+	useState,
+	useEffect,
+	useRef,
+	useLayoutEffect,
+	StateUpdater,
+	useMemo,
+	useCallback,
+} from 'preact/hooks';
 
 export interface TickerProps {
 	scroll: number;
 	setScroll?: StateUpdater<number>;
 	marginFactor?: number; // overlapping distance factor for both sides of the screen
-	marginMin?: number; // minimum overlapping distance for mobile
 }
 
 // This component should receive a single child, which get's cloned to satisfy all
@@ -18,79 +26,120 @@ export interface TickerProps {
 const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props }) => {
 	const [childCount, setChildCount] = useState(1);
 
-	const windowSize = useWindowSize();
-
 	const viewRef = useRef<HTMLDivElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-	const childRefs = useRef<HTMLDivElement[]>([]);
+	const childRef = useRef<HTMLDivElement>(null);
+	const indicatorStartRef = useRef<HTMLSpanElement>(null);
+	const indicatorEndRef = useRef<HTMLSpanElement>(null);
+
+	const windowSize = useWindowSize();
 
 	const viewRect = useBcr(viewRef, [windowSize.width]);
-	const wrapperRect = useBcr(wrapperRef, [childCount, props.scroll]);
-	const childRect = useBcr(childRefs);
+	const wrapperRect = useBcr(wrapperRef, [childCount]);
+	const childRect = useBcr(childRef, []);
 
-	// Keep a reference to all children within the wrapper
-	const assignChildRef: RefCallback<HTMLDivElement> = (ref): void => {
-		if (!ref) return;
-		childRefs.current = [...childRefs.current, ref];
-	};
+	const margin = useMemo(() => {
+		return viewRect.width * props.marginFactor!;
+	}, [viewRect.width, props.marginFactor]);
 
-	const appendContainer = () => {
-		// if (!wrapperRef.current?.firstChild) return;
-		// const firstContainer = wrapperRef.current?.removeChild(wrapperRef.current?.firstChild);
-		// if (firstContainer) {
-		// 	wrapperRef.current?.appendChild(firstContainer);
-		// }
-	};
+	// Moves an existing child either from the start to the end or vice versa
+	// depending on the current scroll position. This results in an infinite scrolling effect.
+	// Each child is getting recycled (rather then cloned and removed) to avoid memory leaks.
+	const moveContainerTo = useCallback(
+		(dir: 'start' | 'end') => {
+			const containerIndex = dir === 'start' ? wrapperRef.current!.children.length - 2 : 1;
+			const container = wrapperRef.current!.removeChild(
+				wrapperRef.current?.children[containerIndex]!
+			);
 
-	const prependContainer = () => {};
+			props.setScroll?.((s) => {
+				if (dir === 'start') {
+					insertAfter(container, indicatorStartRef.current!);
+					return s + childRect.width;
+				} else if (dir === 'end') {
+					wrapperRef.current!.insertBefore(container, indicatorEndRef.current!);
+					return s - childRect.width;
+				} else {
+					throw new Error('Invalid container direction');
+				}
+			});
+		},
+		[childRect.width, wrapperRef]
+	);
 
-	// When first initialized, the wrapper gets only one child in order
-	// to calculate it's width from within a layout effect, which will
-	// inject more children (>1) into the wrapper when done.
+	// Calculates the number of child clones to inject
+	// into the wrapperbased on specified marginFactor.
+	useLayoutEffect(() => {
+		if (viewRect.width === 0) return;
+		const amount = Math.ceil((viewRect.width + 2 * margin) / childRect.width);
+		setChildCount(Math.max(amount, 2));
+	}, [viewRect, childRect.width, margin]);
+
+	// center view each time the width changes
 	useEffect(() => {
 		if (wrapperRect.width === childRect.width) return;
 		props.setScroll?.(wrapperRect.width / 2 - childRect.width / 2);
 	}, [wrapperRect.width, childRect.width]);
 
-	// Renders current scroll position on dom if wrapper exists.
+	// apply scroll position to wrapper element for the visual animation
 	useEffect(() => {
-		wrapperRef.current?.style.setProperty(`transform`, `translateX(${props.scroll * -1}px)`);
-
-		const distanceToEnd = wrapperRect.x + wrapperRect.width - viewRect.width - viewRect.x;
-
-		if (distanceToEnd < viewRect.width * props.marginFactor!) {
-			appendContainer();
+		if (!wrapperRef.current) return;
+		if (
+			wrapperRef.current.style.transition &&
+			!wrapperRef.current.style.transition.includes('none')
+		) {
+			console.log('found transition!');
+			return;
 		}
+		wrapperRef.current.style.setProperty(`transform`, `translateX(${props.scroll * -1}px)`);
 	}, [props.scroll]);
 
-	// Calculates the number of children to inject into the wrapper
-	// based on specified marginFactor and marginMin.
-	useLayoutEffect(() => {
-		if (viewRect.width === 0 || !childRefs.current[0]) return;
-		const childWidth = childRefs.current[0].clientWidth;
-		const margin = viewRect.width * props.marginFactor!;
-		const amount = Math.ceil((viewRect.width + 2 * margin) / childWidth);
-		setChildCount(Math.max(amount, 2));
-	}, [viewRect, childRefs]);
+	// observe start and end indicators and swap children accordingly
+	// to create infinite scrolling effect in both directions
+	useEffect(() => {
+		if (viewRect.width === 0) return;
+
+		const observerCallback: IntersectionObserverCallback = (entries) => {
+			console.count('observerCallback');
+			for (const entry of entries) {
+				if (!entry.isIntersecting) continue;
+				console.log(entry);
+				const target = entry.target as HTMLSpanElement;
+				const dir = target.dataset.indicates;
+				moveContainerTo(dir as 'start' | 'end');
+			}
+		};
+
+		const observer = new IntersectionObserver(observerCallback, {
+			root: viewRef.current,
+			rootMargin: `${margin / 2}px`,
+		});
+
+		observer.observe(indicatorStartRef.current!);
+		observer.observe(indicatorEndRef.current!);
+
+		return () => observer.disconnect();
+	}, [margin]);
 
 	return (
 		<div ref={viewRef} class={style.view}>
 			<div ref={wrapperRef} class={style.wrapper}>
+				<span ref={indicatorStartRef} data-indicates="start"></span>
 				<Repeat amount={childCount}>
 					{(idx) => (
-						<div key={idx} ref={assignChildRef}>
+						<span key={idx} ref={childRef}>
 							{child}
-						</div>
+						</span>
 					)}
 				</Repeat>
+				<span ref={indicatorEndRef} data-indicates="end"></span>
 			</div>
 		</div>
 	);
 };
 
 Ticker.defaultProps = {
-	marginMin: 600,
-	marginFactor: 1.5,
+	marginFactor: 0.5,
 };
 
 export default Ticker;

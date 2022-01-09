@@ -1,7 +1,7 @@
 // See: https://github.com/preactjs/enzyme-adapter-preact-pure
 import { h } from 'preact';
 import { shallow } from 'enzyme';
-import Header from '../../src/components/static/Header';
+import Header from '../../../src/components/static/Header';
 
 describe('Header View', () => {
 	const context = shallow(<Header />);

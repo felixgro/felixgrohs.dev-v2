@@ -8,7 +8,6 @@ interface ServerlessResponse<T> {
 }
 
 interface ServerlessRequestOptions {
-    cache?: boolean;
     ttl?: number;
     fetchOptions?: RequestInit;
 }
@@ -20,39 +19,29 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
 
     // cache serverless function response for 10 days by default
     const cache = useCache<T>('slf_cache__' + functionName, {
-        ttl: 1000 * 60 * 60 * 24 * 10
+        ttl: opts?.ttl ?? 1000 * 60 * 60 * 24 * 10
     });
 
     const sendRequest = async () => {
         const url = `${window.location.origin}/.netlify/functions/${functionName}`;
-
-        try {
-            const response = await fetch(url, opts?.fetchOptions);
-            return await response.json();
-        } catch (err) {
-            console.error(err);
-        }
+        const response = await fetch(url, opts?.fetchOptions);
+        return await response.json();
     };
 
     const checkCache = useCallback(() => {
         const cachedData = cache.get();
+        console.log(requestIdleCallback);
+
         if (cachedData) {
-            setData({
+            return setData({
                 isLoading: false,
                 data: cachedData,
             });
-            return;
         }
-
-        console.debug('Updating cache for ' + functionName);
 
         sendRequest()
             .then(data => {
-                setData({
-                    isLoading: false,
-                    data,
-                });
-
+                setData({ isLoading: false, data });
                 cache.set(data);
             }).catch(error => {
                 console.error(error);

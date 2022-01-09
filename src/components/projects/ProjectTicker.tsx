@@ -1,194 +1,110 @@
-import { h, FunctionalComponent } from 'preact';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'preact/hooks';
+import type { Project } from '@/components/projects/ProjectItem';
+import { h, FunctionalComponent, Fragment } from 'preact';
+import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
+import ProjectDialog from './ProjectDialog';
+import TabFocusTarget from '../shared/TabFocusTarget';
+import Ticker from '../shared/Ticker';
+import ProjectContainer from './ProjectContainer';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
-import useWindowSize from '@/hooks/useWindowSize';
-import ProjectItem, { Project } from './ProjectItem';
-import style from '#/ProjectTicker.css';
+import useStepAnimation from '@/hooks/useStepAnimation';
+import style from '#/Project.css';
 
-const tickerConfig = {
-	speed: 1, // automatic scrolling speed
-	centeringSpeed: 0.8, // speed of centering the clicked project
-	centeringDurationMax: 500, // max duration of centering the clicked project (can increase specified centeringSpeed)
-	centeringEase: 'ease-out', // easing function for centering
-	marginFactor: 1.5, // overlapping distance factor for both sides of the screen
-	marginMin: 600, // minimum overlapping distance for mobile
-};
-
-export type TickerState = 'idle' | 'scrolling' | 'paused' | 'centering';
-
-type TickerProps = {
-	state: TickerState;
+interface ProjectTickerProps {
 	projects: Project[];
-	onProjectClicked?: (project: Project, element: HTMLElement) => void;
-	onProjectCentered?: (project: Project, element: HTMLElement) => void;
-};
+	velocity?: number;
+	marginFactor?: number;
+}
 
-const ProjectTicker: FunctionalComponent<TickerProps> = ({
-	state,
+const ProjectTicker: FunctionalComponent<ProjectTickerProps> = ({
 	projects,
-	onProjectClicked,
-	onProjectCentered,
+	velocity,
+	marginFactor,
 }) => {
-	const [scrollPos, setScrollPos] = useState(0);
-	const tickerRef = useRef<HTMLDivElement>(null);
-	const wrapperRef = useRef<HTMLDivElement>(null);
-	const windowSize = useWindowSize();
+	if (!projects) return <></>;
 
-	const getBcrs = useCallback(() => {
-		return {
-			view: tickerRef.current?.getBoundingClientRect(),
-			wrapper: wrapperRef.current?.getBoundingClientRect(),
-			container: wrapperRef.current?.children[0]?.getBoundingClientRect(),
-		};
-	}, [tickerRef.current, wrapperRef.current, windowSize]);
+	const [scroll, setScroll] = useState(0);
+	const [selectedProject, setSelectedProject] = useState<Project>();
+	const tickerContainerRef = useRef<HTMLDivElement>(null);
 
 	const tickerAnimation = useAnimationFrame(() => {
-		if (state !== 'scrolling') return;
-		const { view, wrapper, container } = getBcrs();
-		if (!view || !wrapper || !container) return;
+		setScroll((s) => s + velocity!);
+	}, [velocity]);
 
-		setScrollPos((curr) => {
-			if (wrapper.width - curr - view.width < view.width * tickerConfig.marginFactor * 0.5) {
-				appendContainer();
-				return curr - container.width;
-			}
-			return curr + tickerConfig.speed;
-		});
-	}, [state, getBcrs]);
+	const centerAnimation = useStepAnimation(scroll, setScroll, {
+		easing: (t, b, c, d) => (c * t) / d + b,
+		duration: 1000,
+	});
 
-	const projectClickHandler = useCallback(
-		(project: Project, el: HTMLElement) => {
-			onProjectClicked?.(project, el);
-			const itemBcr = el.getBoundingClientRect();
-			const tickerBcr = tickerRef.current!.getBoundingClientRect();
-			const diff = itemBcr.x + itemBcr.width / 2 - (tickerBcr.x + tickerBcr.width / 2);
-			let duration = Math.abs(diff / tickerConfig.centeringSpeed);
-			if (duration > tickerConfig.centeringDurationMax) {
-				duration = tickerConfig.centeringDurationMax;
-			}
-
-			const currentX =
-				parseFloat(wrapperRef.current!.style.transform.replace(/[^\d.]/g, '')) * -1;
-
-			wrapperRef
-				.current!.animate(
-					[
-						{ transform: `translateX(${currentX}px)` },
-						{ transform: `translateX(${currentX - diff}px)` },
-					],
-					{
-						easing: tickerConfig.centeringEase,
-						duration,
-					}
-				)
-				.addEventListener('finish', () => {
-					animationCleanup(diff);
-					onProjectCentered?.(project, el);
-				});
-		},
-		[wrapperRef.current]
-	);
-
-	const createProjectContainer = useCallback(() => {
-		return (
-			<div class={style.projectContainer}>
-				{projects.map((project) => (
-					<ProjectItem project={project} onClick={projectClickHandler} />
-				))}
-			</div>
-		);
-	}, [projects]);
-
-	const projectContainers = useMemo(() => {
-		const { container, view } = getBcrs();
-
-		// only insert one container first, to get the correct width
-		// and then insert the rest of the containers immediately
-		if (!container || !view) {
-			return createProjectContainer();
-		}
-
-		const containers = [];
-		let margin = view.width * tickerConfig.marginFactor;
-		if (margin < tickerConfig.marginMin) {
-			margin = tickerConfig.marginMin;
-		}
-		for (let w = 0; w < view.width + 2 * margin; w += container.width) {
-			containers.push(createProjectContainer());
-		}
-		return containers;
-	}, [projects, getBcrs]);
-
-	// moves first container all the way to the right as the new trailing container
-	// this container recycling is done to prevent the browser from creating new DOM nodes
-	const appendContainer = useCallback(() => {
-		if (!wrapperRef.current?.firstChild) return;
-		const firstContainer = wrapperRef.current?.removeChild(wrapperRef.current?.firstChild);
-		if (firstContainer) {
-			wrapperRef.current?.appendChild(firstContainer);
-		}
-	}, []);
-
-	const prependContainer = useCallback(() => {
-		const lastContainer = wrapperRef.current?.removeChild(wrapperRef.current?.lastChild!);
-		if (lastContainer) {
-			wrapperRef.current?.insertBefore(lastContainer, wrapperRef.current?.firstChild);
-		}
-	}, []);
-
-	const animationCleanup = useCallback(
-		(diff: number) => {
-			let res = 0;
-			const { container, view, wrapper } = getBcrs();
-			if (!container || !view || !wrapper) return;
-
-			setScrollPos((prev) => {
-				let newPos = prev + diff;
-
-				if (
-					diff > 0 &&
-					wrapper.width - newPos - view.width < view.width * tickerConfig.marginFactor
-				) {
-					newPos -= container.width;
-					res++;
-					appendContainer();
-				} else if (diff < 0 && prev < view.width * tickerConfig.marginFactor) {
-					newPos += container.width;
-					res--;
-					prependContainer();
-				}
-				return newPos;
-			});
-
-			return res;
-		},
-		[getBcrs]
-	);
-
-	useEffect(() => {
-		const { view, wrapper } = getBcrs();
-		if (!view || !wrapper) return;
-		setScrollPos(wrapper.width / 2 - view.width / 2);
-	}, [projectContainers]);
-
-	useEffect(() => {
-		if (state === 'scrolling') {
-			return tickerAnimation.start();
-		}
+	const clickHandler = (project: Project, el: Element) => {
+		const duration = 500;
 		tickerAnimation.stop();
-	}, [state]);
+
+		const wrapper = el.parentElement?.parentElement!.parentElement!,
+			view = wrapper.parentElement!,
+			viewBcr = view.getBoundingClientRect(),
+			elBcr = el.getBoundingClientRect(),
+			diff = elBcr.x + elBcr.width / 2 - (viewBcr.x + viewBcr.width / 2);
+
+		console.log((scroll + diff) * -1);
+		wrapper.style.transition = `all ${duration}ms ease-in-out`;
+		getComputedStyle(wrapper).transition;
+		wrapper.style.transform = `translateX(${(scroll + diff) * -1}px)`;
+
+		setTimeout(() => {
+			wrapper.style.transition = 'none';
+			getComputedStyle(wrapper).transition;
+			setScroll(scroll + diff);
+		}, duration);
+
+		setSelectedProject(project);
+		// centerAnimation.animateTo(scroll + diff);
+	};
+
+	const tabTriggerHandler = () => {
+		console.log('tab trigger');
+	};
+
+	const updateStyles = useCallback(() => {
+		tickerContainerRef
+			.current!.querySelectorAll(`.${style.projectItemActive}`)
+			.forEach((el) => el.classList.remove(style.projectItemActive));
+
+		if (selectedProject) {
+			const projElements = tickerContainerRef.current!.querySelectorAll(
+				`[data-project-id="${selectedProject.id}"]`
+			);
+
+			projElements.forEach((el) => el.classList.add(style.projectItemActive));
+		}
+	}, [tickerContainerRef, selectedProject]);
+
+	useEffect(() => {
+		requestAnimationFrame(updateStyles);
+
+		if (!selectedProject) {
+			tickerAnimation.start();
+			return;
+		}
+
+		// tickerAnimation.stop();
+	}, [selectedProject]);
 
 	return (
-		<div class={style.projectTicker} ref={tickerRef}>
-			<div
-				ref={wrapperRef}
-				class={style.projectContainerWrapper}
-				style={`transform: translateX(${scrollPos * -1}px)`}
-			>
-				{projectContainers}
+		<>
+			<TabFocusTarget onTrigger={tabTriggerHandler} label="Start project browsing" />
+			<div class={style.projectTicker} aria-hidden={true} ref={tickerContainerRef}>
+				<Ticker scroll={scroll} setScroll={setScroll} marginFactor={marginFactor}>
+					<ProjectContainer projects={projects} onProjectClick={clickHandler} />
+				</Ticker>
 			</div>
-		</div>
+			<ProjectDialog project={selectedProject} />
+		</>
 	);
+};
+
+ProjectTicker.defaultProps = {
+	velocity: 1,
+	marginFactor: 1.5,
 };
 
 export default ProjectTicker;
