@@ -1,6 +1,6 @@
 # felixgrohs.dev v2
 
-Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
+Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
 
 ## Improvements 🚀
 - Pre-render components at build time to support disabled js and improve FCP
