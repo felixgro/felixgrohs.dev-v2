@@ -1,14 +1,5 @@
-[build]
-    publish = "build"
-
 [functions]
     directory = "functions"
-
-[dev]
-    command = "yarn dev"
-    publish = "src"
-    targetPort = 8080
-    framework = "#custom"
 
 [[headers]]
     for = "/*"
@@ -16,3 +7,12 @@
         X-Frame-Options = "DENY"
         X-XSS-Protection = "1; mode=block"
         X-Content-Type-Options = "nosniff"
+        
+[build]
+    publish = "build"
+
+[dev]
+    command = "yarn dev"
+    publish = "src"
+    targetPort = 8080
+    framework = "#custom"

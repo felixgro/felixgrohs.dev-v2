@@ -10,32 +10,7 @@ Rebuilding my [personal website](https://github.com/felixgro/felixgrohs.dev) usi
 - Improved animation performance
 - Modular CSS
 
-## Development
-
-### Requirements
-- JS Package Manager (NPM, Yarn, etc..)
-- Node
-- Git
-
-### Getting Started
-These instructions will get you a copy of this website up and running on your local machine for development and testing purposes.
-
-Start by cloning this repository and specify a directory name (f.e myClone):
-```bash
-git clone https://github.com/felixgro/felixgrohs.dev-v2.git myClone
-```
-Go in the cloned directory and install all dependencies using your package manager of choice:
-```bash
-cd myClone
-npm i
-```
-Boot up a development server:
-```bash
-npm run dev
-```
-***Note:*** *This does NOT start serverless functions required for dynamic project fetching. A fallback component will get rendered instead.*
-
-### Project Structure
+## Project Structure
 | Directory | Alias | Description |
 | :----- | :----- | :----- |
 |`functions/`||serverless functions|
@@ -45,6 +20,28 @@ npm run dev
 |`src/hooks/`||custom hooks|
 |`src/styles/`||css files|
 |`src/styles/modules/`|`#/`|css modules|
+
+## Development
+
+### Requirements
+- JS Package Manager (NPM, Yarn, etc..)
+- Node
+- Git
+
+### Getting Started
+Start by cloning this repository and specify a directory name (f.e myClone):
+```bash
+git clone https://github.com/felixgro/felixgrohs.dev-v2.git myClone
+```
+Go in the cloned directory and install all dependencies using your package manager of choice:
+```bash
+cd myClone
+npm i
+```
+Boot up a development server along with all serverless functions:
+```bash
+npm run dev:all
+```
 
 ### CLI Commands
 *   `npm install`: Install dependencies
