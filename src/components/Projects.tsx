@@ -9,10 +9,8 @@ const Projects: FunctionalComponent = () => {
 
 	return (
 		<aside class={style.projects} aria-label="Selection of projects">
-			{projects ? (
-				<ProjectTicker projects={projects!} velocity={1} marginFactor={1.5} />
-			) : null}
 			<ProjectFallback show={!projects} />
+			{projects && <ProjectTicker projects={projects} velocity={1} marginFactor={1.5} />}
 		</aside>
 	);
 };

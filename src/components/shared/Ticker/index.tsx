@@ -1,18 +1,18 @@
 import { h, FunctionalComponent } from 'preact';
-import { insertAfter } from '@/utils/dom';
+import {
+	useRef,
+	useMemo,
+	useState,
+	useEffect,
+	useCallback,
+	useLayoutEffect,
+	StateUpdater,
+} from 'preact/hooks';
 import useWindowSize from '@/hooks/useWindowSize';
 import useBcr from '@/hooks/useElementSize';
 import Repeat from '@/components/shared/Repeat';
-import style from '#/Ticker.css';
-import {
-	useState,
-	useEffect,
-	useRef,
-	useLayoutEffect,
-	StateUpdater,
-	useMemo,
-	useCallback,
-} from 'preact/hooks';
+import { insertAfter } from '@/utils/dom';
+import style from './style.css';
 
 export interface TickerProps {
 	scroll: number;
@@ -71,8 +71,8 @@ const Ticker: FunctionalComponent<TickerProps> = ({ children: child, ...props })
 	// into the wrapperbased on specified marginFactor.
 	useLayoutEffect(() => {
 		if (viewRect.width === 0) return;
-		const amount = Math.ceil((viewRect.width + 2 * margin) / childRect.width);
-		setChildCount(Math.max(amount, 2));
+		const childAmount = Math.ceil((viewRect.width + 2 * margin) / childRect.width);
+		setChildCount(Math.max(childAmount, 2));
 	}, [viewRect, childRect.width, margin]);
 
 	// center view each time the width changes

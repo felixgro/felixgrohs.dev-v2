@@ -5,7 +5,7 @@ import useStepAnimation from '@/hooks/useStepAnimation';
 import type { Project } from './ProjectItem';
 import ProjectDialog from './ProjectDialog';
 import ProjectContainer from './ProjectContainer';
-import TabFocusTarget from '@/components/shared/TabFocusTarget';
+import TabFocusTarget from '@/components/shared/FocusTarget';
 import Ticker from '@/components/shared/Ticker';
 import style from '#/Project.css';
 

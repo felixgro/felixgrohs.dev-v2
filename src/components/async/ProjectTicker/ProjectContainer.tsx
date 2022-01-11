@@ -1,11 +1,10 @@
-import { h, FunctionalComponent, Ref } from 'preact';
+import { h, FunctionalComponent } from 'preact';
 import ProjectItem, { Project, ProjectClickHandler } from './ProjectItem';
 import style from '#/ProjectTicker.css';
 
 interface ProjectContainerProps {
 	projects: Project[];
 	onProjectClick?: ProjectClickHandler;
-	ref?: Ref<HTMLElement>;
 }
 
 const ProjectContainer: FunctionalComponent<ProjectContainerProps> = ({
@@ -15,7 +14,7 @@ const ProjectContainer: FunctionalComponent<ProjectContainerProps> = ({
 	return (
 		<div class={style.projectContainer}>
 			{projects.map((project) => (
-				<ProjectItem project={project} onClick={onProjectClick} />
+				<ProjectItem key={project.id} project={project} onClick={onProjectClick} />
 			))}
 		</div>
 	);
