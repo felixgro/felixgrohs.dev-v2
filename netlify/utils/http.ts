@@ -1,14 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 type ResponseBody = Record<string, unknown> | unknown[] | string | null | undefined;
 
-export const request = async (url: string, options?: RequestInit) => {
-    return await axios.get(url, {
-        headers: {
-            'Content-Type': 'application/json',
-            'authorization': `TOKEN ${process.env.GITHUB_TOKEN}`,
-        }
-    });
+export const request = async (url: string, config?: AxiosRequestConfig) => {
+    return await axios.get(url, config);
 }
 
 export const response = (status: number, body?: ResponseBody) => {
