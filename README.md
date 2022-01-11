@@ -16,7 +16,7 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 |`functions/`||serverless functions|
 |`src/`|`@/`|frontend files|
 |`src/assets/`||static assets|
-|`src/components/`||components|
+|`src/components/`||functional components|
 |`src/hooks/`||custom hooks|
 |`src/styles/`||css files|
 |`src/styles/modules/`|`#/`|css modules|
