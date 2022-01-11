@@ -4,22 +4,30 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 
 ## Improvements 🚀
 - Pre-render components at build time to support disabled js and improve FCP
-- Serverless function for fetching projects directly from my github profile
-- Client-side caching to minimize requests
-- PWA support by using a Service Worker
+- Serverless function for fetching projects directly from a github profile
+- Client-side caching to minimize serverless requests
 - Improved animation performance
-- Modular CSS
+- PWA support
 
 ## Project Structure
 | Directory | Alias | Description |
 | :----- | :----- | :----- |
-|`functions/`||serverless functions|
+|`netlify/`||serverless functions|
+|`tests/`||unit tests|
 |`src/`|`@/`|frontend files|
+<<<<<<< HEAD
 |`src/assets/`||static assets|
 |`src/components/`||functional components|
 |`src/hooks/`||custom hooks|
 |`src/styles/`||css files|
 |`src/styles/modules/`|`#/`|css modules|
+=======
+| &ensp; `assets/`||static assets|
+| &ensp; `components/`||components|
+| &ensp; `hooks/`||custom hooks|
+| &ensp; `styles/`||css files|
+| &emsp; `modules/`|`#/`|css modules|
+>>>>>>> 6f8792ac5d71ec234aa81b1013f44dc8d922a0b6
 
 ## Development
 
@@ -38,23 +46,25 @@ Go in the cloned directory and install all dependencies using your package manag
 cd myClone
 npm i
 ```
-Boot up a development server along with all serverless functions:
+Boot up a development server:
 ```bash
-npm run dev:all
+npm run dev
 ```
 
 ### CLI Commands
-*   `npm install`: Install dependencies
+*   `npm install` Install dependencies
 
-*   `npm run dev`: Run a development, HMR server
+*   `npm run dev` Run development, HMR server
 
-*   `npm run serve`: Run a production-like server
+*   `npm run dev:netlify` Run development, HMR server with serverless functions
 
-*   `npm run build`: Create production-ready build
+*   `npm run serve` Run a production-like server
 
-*   `npm run lint`: Run ESLint
+*   `npm run build` Create production-ready build
 
-*   `npm run test`: Run Jest and Enzyme
+*   `npm run lint` Run ESLint
+
+*   `npm run test` Run Jest and Enzyme
 
 For detailed explanation on how things work, checkout [preact-cli](https://github.com/developit/preact-cli/blob/master/README.md).
 
