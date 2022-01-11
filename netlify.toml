@@ -10,7 +10,7 @@
     command = "yarn build"
 
 [dev]
-    command = "yarn dev"
     publish = "src"
+    command = "yarn dev"
     targetPort = 8080
     framework = "#custom"
