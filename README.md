@@ -1,5 +1,7 @@
 # felixgrohs.dev v2
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/5e50b440-5a3d-449f-8be8-40f604f8716a/deploy-status)](https://app.netlify.com/sites/fgv2/deploys)
+
 Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
 
 ## Improvements 🚀
