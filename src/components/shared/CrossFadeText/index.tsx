@@ -2,7 +2,6 @@ import { h, FunctionalComponent, Component } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import DynamicTag from '@/components/shared/DynamicTag';
 import style from './style.css';
-import usePreviousState from '@/hooks/usePreviousState';
 
 interface CrossFadeTextProps {
 	value: string;
@@ -12,11 +11,11 @@ interface CrossFadeTextProps {
 }
 
 const CrossFadeText: FunctionalComponent<CrossFadeTextProps> = (props) => {
+	const [current, setCurrent] = useState<string>(props.value);
+
 	const primaryTextRef = useRef<Component>(null);
 	const secondaryTextRef = useRef<Component>(null);
 	const wrapperRef = useRef<HTMLDivElement>(null);
-
-	const [current, setCurrent] = useState<string>(props.value);
 
 	useEffect(() => {
 		if (!primaryTextRef.current || !secondaryTextRef.current || current === props.value) return;
@@ -29,6 +28,8 @@ const CrossFadeText: FunctionalComponent<CrossFadeTextProps> = (props) => {
 			easing: 'ease-out',
 		};
 
+		primaryEl.style.position = 'absolute';
+
 		const animations: Animation[] = [
 			secondaryEl.animate([props.in!], animationOptions),
 			primaryEl.animate([props.out!], animationOptions),
@@ -36,10 +37,10 @@ const CrossFadeText: FunctionalComponent<CrossFadeTextProps> = (props) => {
 
 		const animationFinishHandler = () => {
 			setCurrent(props.value);
+			primaryEl.style.position = 'relative';
 		};
 
 		animations[1].addEventListener('finish', animationFinishHandler);
-
 		return () => animations[1].removeEventListener('finish', animationFinishHandler);
 	}, [props.value]);
 

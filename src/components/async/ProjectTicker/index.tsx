@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
 import useStepAnimation from '@/hooks/useStepAnimation';
 import type { Project } from './ProjectItem';
-import ProjectDialog from './ProjectDialog';
+import ProjectDialog from '../ProjectDialog';
 import ProjectContainer from './ProjectContainer';
 import TabFocusTarget from '@/components/shared/FocusTarget';
 import Ticker from '@/components/shared/Ticker';
