@@ -7,6 +7,8 @@ import style from '#/Project.css';
 const Projects: FunctionalComponent = () => {
 	const projects = useProjects();
 
+	if (typeof window !== 'undefined') throw new Error('Test Error Handling');
+
 	return (
 		<aside class={style.projects} aria-label="Selection of projects">
 			<ProjectFallback show={!projects} />

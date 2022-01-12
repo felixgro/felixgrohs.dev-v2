@@ -1,7 +1,7 @@
 import { Handler } from '@netlify/functions';
-import { fetchGithub, isValidRepository, Repository, RepositoryLanguages } from '../utils/github';
-import { asyncMap } from '../utils/array';
-import { response } from '../utils/http';
+import { fetchGithub, isValidRepository, Repository, RepositoryLanguages } from '../libs/github';
+import { response } from '../libs/http';
+import { asyncMap } from '../helpers/array';
 
 export const handler: Handler = async (event, context) => {
     const { GITHUB_USER } = process.env;
