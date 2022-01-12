@@ -1,6 +1,7 @@
 import { FunctionalComponent, h, Fragment } from 'preact';
 import { useEffect, useRef, useCallback } from 'preact/hooks';
 import { Project } from './ProjectItem';
+import CrossFadeText from '@/components/shared/CrossFadeText';
 import style from '#/ProjectDialog.css';
 
 interface ProjectDialogProps {
@@ -41,16 +42,16 @@ const ProjectDialog: FunctionalComponent<ProjectDialogProps> = ({ project }) => 
 	return (
 		<div ref={dialogRef} class={style.dialog}>
 			<header>
-				<h1>{project.name}</h1>
-				<ul>
-					{project.languages.map((lang) => (
-						<li>
-							{lang.name} ({(Math.round(lang.val * 1000) / 1000) * 100}%)
-						</li>
-					))}
-				</ul>
+				<CrossFadeText value={project.name} tag="h1" />
 			</header>
-			<p>{project.description}</p>
+			<CrossFadeText value={project.description} tag="p" />
+			<ul>
+				{project.languages.map((lang) => (
+					<li>
+						{lang.name} ({(Math.round(lang.val * 1000) / 1000) * 100}%)
+					</li>
+				))}
+			</ul>
 			<footer>
 				<nav>
 					<a href={project.url} target="_blank">
