@@ -49,8 +49,8 @@
 			"^@/(.*)$": "<rootDir>/src/$1"
 		},
 		"setupFiles": [
-			"<rootDir>/tests/__mocks__/browserMocks.ts",
-			"<rootDir>/tests/__mocks__/setupTests.ts"
+			"<rootDir>/tests/mocks/browserMocks.ts",
+			"<rootDir>/tests/mocks/setupTests.ts"
 		]
 	}
 }
