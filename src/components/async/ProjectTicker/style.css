@@ -1,0 +1,30 @@
+.projectTicker {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.projectContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+}
+
+.projectItem {
+	white-space: nowrap;
+	padding: 8px 16px;
+	font-size: 1rem;
+	margin: 2px 5px;
+	border-radius: 100px;
+	background: #eee;
+	color: #333;
+	cursor: pointer;
+	transition: all 240ms ease-out;
+}
+
+.projectItemActive {
+	background: #aaa !important;
+}

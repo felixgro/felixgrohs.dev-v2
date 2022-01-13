@@ -1,5 +1,4 @@
 import { h, FunctionalComponent } from 'preact';
-import style from '#/Project.css';
 import { useEffect, useRef } from 'preact/hooks';
 
 interface ProjectFallbackProps {
@@ -28,7 +27,6 @@ const ProjectFallback: FunctionalComponent<ProjectFallbackProps> = ({ show }) =>
 	return (
 		<div
 			ref={elementRef}
-			class={style.projectWrapper}
 			style={{
 				position: 'absolute',
 				inset: 0,

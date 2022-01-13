@@ -7,7 +7,7 @@ import ProjectDialog from '../ProjectDialog';
 import ProjectContainer from './ProjectContainer';
 import TabFocusTarget from '@/components/shared/FocusTarget';
 import Ticker from '@/components/shared/Ticker';
-import style from '#/Project.css';
+import style from './style.css';
 
 interface ProjectTickerProps {
 	projects: Project[];

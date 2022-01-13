@@ -1,8 +1,8 @@
 import { h, FunctionalComponent } from 'preact';
 import useProjects from '@/hooks/useProjects';
 import ProjectTicker from '@/components/async/ProjectTicker';
-import ProjectFallback from '@/components/static/ProjectFallback';
-import style from '#/Project.css';
+import ProjectFallback from './Fallback';
+import style from './style.css';
 
 const Projects: FunctionalComponent = () => {
 	const projects = useProjects();

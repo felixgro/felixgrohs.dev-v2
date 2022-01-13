@@ -1,6 +1,6 @@
 import { h, FunctionalComponent } from 'preact';
 import Sandbox from '@/components/Sandbox';
-import style from '#/Intro.css';
+import style from './style.css';
 
 const Intro: FunctionalComponent = () => {
 	return (

@@ -23,6 +23,15 @@ const CrossFadeText: FunctionalComponent<CrossFadeTextProps> = (props) => {
 		const primaryEl = primaryTextRef.current.base as HTMLElement;
 		const secondaryEl = secondaryTextRef.current.base as HTMLElement;
 
+		const animationFinishHandler = () => {
+			setCurrent(props.value);
+			primaryEl.style.position = 'relative';
+		};
+
+		if (!('animate' in primaryEl)) {
+			return animationFinishHandler();
+		}
+
 		const animationOptions: KeyframeAnimationOptions = {
 			duration: 500,
 			easing: 'ease-out',
@@ -34,11 +43,6 @@ const CrossFadeText: FunctionalComponent<CrossFadeTextProps> = (props) => {
 			secondaryEl.animate([props.in!], animationOptions),
 			primaryEl.animate([props.out!], animationOptions),
 		];
-
-		const animationFinishHandler = () => {
-			setCurrent(props.value);
-			primaryEl.style.position = 'relative';
-		};
 
 		animations[1].addEventListener('finish', animationFinishHandler);
 		return () => animations[1].removeEventListener('finish', animationFinishHandler);

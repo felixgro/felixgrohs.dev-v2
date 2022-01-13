@@ -1,6 +1,6 @@
 import { h, FunctionalComponent } from 'preact';
 import ProjectItem, { Project, ProjectClickHandler } from './ProjectItem';
-import style from '#/ProjectTicker.css';
+import style from './style.css';
 
 interface ProjectContainerProps {
 	projects: Project[];

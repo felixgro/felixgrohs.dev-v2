@@ -1,4 +1,4 @@
-import { FunctionalComponent, Fragment } from 'preact';
+import { h, FunctionalComponent, Fragment } from 'preact';
 
 export interface RepeatProps {
 	amount: number;

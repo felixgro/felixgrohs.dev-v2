@@ -10,4 +10,9 @@ const TabFocusTarget: FunctionalComponent<TabFocusTargetProps> = ({ label, onTri
 	return <button onClick={onTrigger} class={style.target} aria-label={label}></button>;
 };
 
+TabFocusTarget.defaultProps = {
+	label: '',
+	onTrigger: () => {},
+};
+
 export default TabFocusTarget;

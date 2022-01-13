@@ -1,37 +1,14 @@
-// Mock Browser API's which are not supported by JSDOM, e.g. ServiceWorker, LocalStorage
-/**
- * An example how to mock localStorage is given below 👇
- */
+class DOMRectMock {
+	public x = 0;
+	public y = 0;
+	public width = 0;
+	public height = 0;
+	public top = 0;
+	public right = 0;
+	public bottom = 0;
+	public left = 0;
+}
 
-/* 
-// Mocks localStorage
-const localStorageMock = (function() {
-	let store = {};
-
-	return {
-		getItem: (key) => store[key] || null,
-		setItem: (key, value) => store[key] = value.toString(),
-		clear: () => store = {}
-	};
-
-})();
-
-Object.defineProperty(window, 'localStorage', {
-	value: localStorageMock
-}); */
-
-// FIXME: this does not work on each HTMLELement in JSDOM
-const getBoundingClientRectMock = (() => ({
-	top: 0,
-	left: 0,
-	width: 0,
-	height: 0,
-	right: 0,
-	bottom: 0
-}))();
-
-Object.defineProperty(HTMLElement, 'getBoundingClientRect', {
-	value: getBoundingClientRectMock
+Object.defineProperty(window, 'DOMRect', {
+	value: DOMRectMock
 });
-
-// TODO: add HTMLElement.animate() mock

@@ -1,0 +1,7 @@
+.projects {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	border: 1px solid #ccc;
+	height: 60px;
+}

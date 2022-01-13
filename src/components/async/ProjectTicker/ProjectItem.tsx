@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from 'preact';
-import style from '#/ProjectItem.css';
+import style from './style.css';
 
 export interface Project {
 	id: number;
