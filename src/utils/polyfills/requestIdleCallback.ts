@@ -1,10 +1,7 @@
 export default () => {
     if (typeof window.requestIdleCallback === 'function') return;
 
-    window.requestIdleCallback = (
-        callback: (deadline: IdleDeadline) => void,
-        options?: { timeout?: number }
-    ) => {
+    const requestIdleCallback = (callback: IdleRequestCallback, options?: IdleRequestOptions): Number => {
         const timeout = options?.timeout ?? 1;
         let timeoutId: number | null = null;
         const startTime = Date.now();
@@ -25,4 +22,12 @@ export default () => {
 
         return timeoutId;
     }
+
+    const cancleIdleCallback = (id: number): void => {
+        window.clearTimeout(id);
+    }
+
+    // @ts-ignore
+    window.requestIdleCallback = requestIdleCallback;
+    window.cancelIdleCallback = cancleIdleCallback;
 }
