@@ -5,23 +5,30 @@
 Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev) using [preact](https://preactjs.com/).
 
 ## Improvements 🚀
-- Pre-render components at build time to support disabled js and improve FCP
+- Pre-render components at build time for better SEO, faster FCP and support for disabled JS
 - Serverless function for fetching projects directly from a github profile
 - Client-side caching to minimize serverless requests
+- Realtime error notifications via email
 - Improved animation performance
 - PWA support
 
 ## Project Structure
 | Directory | Alias | Description |
 | :----- | :----- | :----- |
-|`netlify/`||serverless functions|
-|`tests/`||unit tests|
-|`src/`|`@/`|frontend files|
-|`src/assets/`||static assets|
-|`src/components/`||functional components|
-|`src/hooks/`||custom hooks|
-|`src/styles/`||css files|
-|`src/styles/modules/`|`#/`|css modules|
+| `netlify/`||serverless node.js functions|
+| &nbsp; `functions/`||lambda functions|
+| &nbsp; `helpers/`||helper functions|
+| &nbsp; `libs/`||dependency modules|
+| `src/`|`@/`|frontend files|
+| &nbsp; `assets/`||static assets|
+| &nbsp; `hooks/`||custom hooks|
+| &nbsp; `styles/`||global css styles|
+| &nbsp; `utils/`||utility functions & polyfills|
+| &nbsp; `components/`||functional components & css modules|
+| &nbsp; &nbsp; `main/`||layout components|
+| &nbsp; &nbsp; `shared/`||reusable components|
+| &nbsp; &nbsp; `async/`||asynchronous components (requested as external bundle after initial load)|
+| `tests/` ||unit tests & mocks|
 
 ## Development
 
@@ -31,34 +38,30 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 - Git
 
 ### Getting Started
-Start by cloning this repository and specify a directory name (f.e myClone):
+Start by cloning this repository:
 ```bash
-git clone https://github.com/felixgro/felixgrohs.dev-v2.git myClone
+git clone https://github.com/felixgro/felixgrohs.dev-v2.git
 ```
-Go in the cloned directory and install all dependencies using your package manager of choice:
+Install all dependencies using your package manager of choice:
 ```bash
-cd myClone
 npm i
+# or
+yarn
 ```
+
 Boot up a development server:
 ```bash
-npm run dev
+npm run dev     # only frontend, no serverless functions
 ```
 
+
 ### CLI Commands
-*   `npm install` Install dependencies
-
-*   `npm run dev` Run development, HMR server
-
-*   `npm run dev:netlify` Run development, HMR server with serverless functions
-
-*   `npm run serve` Run a production-like server
-
-*   `npm run build` Create production-ready build
-
-*   `npm run lint` Run ESLint
-
-*   `npm run test` Run Jest and Enzyme
-
-For detailed explanation on how things work, checkout [preact-cli](https://github.com/developit/preact-cli/blob/master/README.md).
+| Command | Description |
+| :----- | :----- |
+| `dev`|Run development, HMR server|
+| `dev:netlify`|Run development, HMR server with serverless functions|
+| `serve`|Run a production-like server|
+| `build`|Create production-ready build|
+| `lint`|Run ESLint|
+| `test`|Run Jest and Enzyme|
 
