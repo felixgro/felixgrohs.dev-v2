@@ -9,9 +9,7 @@ interface ErrorData {
 }
 
 export const handler: Handler = async (event, context) => {
-    if (event.httpMethod !== 'POST' || !event.body) {
-        return response(400);
-    }
+    if (event.httpMethod !== 'POST' || !event.body) return response(400);
 
     const error: ErrorData = JSON.parse(event.body);
 
