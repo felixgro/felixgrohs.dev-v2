@@ -49,13 +49,38 @@ npm i
 yarn
 ```
 
-Boot up a development server:
+Boot up a local development server:
 ```bash
 npm run dev     # only frontend, no serverless functions
 ```
 
+### Serverless Functions
+Clone and rename `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
 
-### CLI Commands
+Add your Github username and API token to the freshly cloned `.env` file:
+```
+GITHUB_TOKEN=YOUR_GITHUB_API_TOKEN
+GITHUB_USER=YOUR_GITHUB_USERNAME
+```
+
+\[Optionally\] Setup realtime error reporting using Mailersend by including your token along with your desired sending/receiving email address in the `.env` file:
+```
+MAILERSEND_TOKEN=mailersend_token
+MAILERSEND_FROM=error@example.com
+MAILERSEND_FROM_NAME=Error Reporter
+MAILERSEND_TO=joe@example.com
+MAILERSEND_TO_NAME=Joe
+```
+
+Boot up a local development server along with all serverless functions:
+```bash
+npm run dev:netlify
+```
+
+### All CLI Commands
 | Command | Description |
 | :----- | :----- |
 | `dev`|Run development, HMR server|
