@@ -10,5 +10,7 @@ export const sendError = async (error: Error) => {
 }
 
 export const handleError = async (error: Error) => {
+    if (location.origin.includes('localhost')) return;
+
     await sendError(error);
 };
