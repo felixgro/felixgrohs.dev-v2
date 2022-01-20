@@ -3,19 +3,21 @@
 import MailerSend from 'mailersend';
 
 interface MailOptions {
+    token: string;
     fromName: string;
     fromMail: string;
     toName: string;
     toMail: string;
     subject: string;
     body: string;
+    text: string;
 }
 
 export const sendMail = async (opts: MailOptions) => {
     const { Recipient, EmailParams } = MailerSend;
 
     const mailersend = new MailerSend({
-        api_key: process.env.MAILERSEND_TOKEN,
+        api_key: opts.token,
     });
 
     const params = new EmailParams()
@@ -24,7 +26,7 @@ export const sendMail = async (opts: MailOptions) => {
         .setRecipients([new Recipient(opts.toMail, opts.toName)])
         .setSubject(opts.subject)
         .setHtml(opts.body)
-        .setText(opts.body);
+        .setText(opts.text);
 
     return mailersend.send(params);
 }

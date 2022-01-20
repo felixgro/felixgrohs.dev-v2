@@ -11,23 +11,42 @@ interface ErrorData {
 export const handler: Handler = async (event, context) => {
     if (event.httpMethod !== 'POST' || !event.body) return response(400);
 
+    const {
+        MAILERSEND_TOKEN: token,
+        MAILERSEND_FROM: fromMail,
+        MAILERSEND_FROM_NAME: fromName,
+        MAILERSEND_TO: toMail,
+        MAILERSEND_TO_NAME: toName,
+    } = process.env;
+
+    if (!token || !fromMail || !fromName || !toMail || !toName) {
+        return response(500, 'Missing environment variables for realtime error reporting.');
+    }
+
     const error: ErrorData = JSON.parse(event.body);
 
-    try {
-        await sendMail({
-            fromName: '[Error Bot] felixgrohs.dev',
-            fromMail: 'bot@felixgrohs.dev',
-            toName: 'Felix Grohs',
-            toMail: 'me@felixgrohs.dev',
-            subject: error.message,
-            body: `
-                <small>${error.agent}</small>
-                <pre>${error.stack}</pre>
-            `
-        });
-    } catch (err: any) {
-        return response(500, err);
-    }
+    const subject = `${error.message}`;
+
+    const text = `
+        Error occurred on: ${error.agent}:
+        ${error.stack}
+    `;
+
+    const body = `
+        <small>${error.agent}</small>
+        <pre>${error.stack}</pre>
+    `;
+
+    await sendMail({
+        token,
+        fromMail,
+        fromName,
+        toMail,
+        toName,
+        subject,
+        body,
+        text
+    });
 
     return response(200, 'mail sent successfully');
 }
