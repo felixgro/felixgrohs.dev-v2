@@ -1,5 +1,5 @@
 import { h, FunctionalComponent } from 'preact';
-import Sandbox from '@/components/Sandbox';
+import Sandbox from '@/components/async/Sandbox';
 import style from './style.css';
 
 const Intro: FunctionalComponent = () => {
@@ -16,7 +16,6 @@ const Intro: FunctionalComponent = () => {
 					Visit me on <a href="#">Github</a> or <a href="#">Twitter</a>.
 				</p>
 			</article>
-			<Sandbox />
 		</main>
 	);
 };
