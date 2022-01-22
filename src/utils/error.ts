@@ -1,5 +1,5 @@
 export const sendError = async (error: Error) => {
-    return await fetch(`${window.location.origin}/.netlify/functions/sendError`, {
+    return await fetch(`/api/sendError`, {
         method: 'POST',
         body: JSON.stringify({
             message: error.message,

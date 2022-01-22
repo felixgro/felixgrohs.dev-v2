@@ -1,49 +1,41 @@
 import { h, FunctionalComponent } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
+import style from './style.css';
 
 interface ProjectFallbackProps {
 	show: boolean;
+	delay?: number;
 }
 
-const ProjectFallback: FunctionalComponent<ProjectFallbackProps> = ({ show }) => {
+const ProjectFallback: FunctionalComponent<ProjectFallbackProps> = ({ show, delay }) => {
 	const elementRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!elementRef.current) return;
+		const iidx = setTimeout(() => {
+			if (!elementRef.current || show) return;
 
-		const animation = elementRef.current.animate([{ clipPath: 'inset(0 0 0 100%)' }], {
-			duration: 320,
-			delay: 1500,
-			easing: 'ease-out',
-			fill: 'forwards',
-		});
+			elementRef.current.animate([{ clipPath: 'inset(0 0 0 100%)' }], {
+				duration: 480,
+				easing: 'ease-out',
+				fill: 'forwards',
+			});
+		}, delay);
 
-		const handleAnimationFinish = () => elementRef.current?.remove();
-
-		animation.addEventListener('finish', handleAnimationFinish);
-		return () => animation.removeEventListener('finish', handleAnimationFinish);
+		return () => clearTimeout(iidx);
 	}, [show]);
 
 	return (
-		<div
-			ref={elementRef}
-			style={{
-				position: 'absolute',
-				inset: 0,
-				background: '#eee',
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				zIndex: 1000,
-				clipPath: 'inset(0)',
-			}}
-		>
+		<div ref={elementRef} class={style.fallback}>
 			<span>
 				Feel free to checkout my{' '}
 				<a href="https://github.com/felixgro?tab=repositories">Projects</a>
 			</span>
 		</div>
 	);
+};
+
+ProjectFallback.defaultProps = {
+	delay: 1500,
 };
 
 export default ProjectFallback;

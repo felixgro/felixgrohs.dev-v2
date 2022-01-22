@@ -1,19 +1,44 @@
 import { request } from './http';
 
-export const isValidRepository = (r: Repository) => {
+// Sends a get request to github's api on given path
+const fetchGithub = async <T>(path: string) => {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) throw new Error('GITHUB_TOKEN not set as env variable');
+
+    return await request<T>('get', `https://api.github.com/${path}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': `TOKEN ${token}`,
+        }
+    });
+}
+
+// Checks if a repository is allowed to be displayed on the website
+const isValidRepository = (r: Repository) => {
     return r.description &&
         !r.private &&
         !r.fork &&
         !r.description.includes('[private]');
 }
 
-export const fetchGithub = async <T>(path: string) => {
-    return await request<T>(`https://api.github.com/${path}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            'authorization': `TOKEN ${process.env.GITHUB_TOKEN}`,
-        }
-    });
+// Get & filter repositories for specific github user
+export const getRepositories = async (): Promise<Repository[]> => {
+    const user = process.env.GITHUB_USER;
+    if (!user) throw new Error('GITHUB_USER not set as env variable');
+
+    const repos = (await fetchGithub<Repository[]>(`users/${user}/repos`))
+        .data
+        .filter(isValidRepository);
+
+    return repos;
+}
+
+// Get relative language stats for a repository
+// f.e.: { "JavaScript": 0.5, "TypeScript": 0.3, "CSS": 0.2 }
+export const getLanguageStats = async (repo: Repository): Promise<RepositoryLanguageStats[]> => {
+    const res = await fetchGithub<RepositoryLanguages>(`repos/${repo.full_name}/languages`);
+    const sum = Object.values<number>(res.data).reduce((a: any, b: any) => a + b, 0);
+    return Object.entries<number>(res.data).map<RepositoryLanguageStats>(([name, val]) => ({ name, val: val / sum }))
 }
 
 export interface Repository {
@@ -135,3 +160,5 @@ export interface RepositoryPermissions {
 }
 
 export type RepositoryLanguages = { [key: string]: number };
+
+export type RepositoryLanguageStats = { name: string, val: number };

@@ -5,3 +5,14 @@
 	border: 1px solid #ccc;
 	height: 60px;
 }
+
+.fallback {
+	position: absolute;
+	inset: 0;
+	background: #eee;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	clip-path: inset(0);
+}

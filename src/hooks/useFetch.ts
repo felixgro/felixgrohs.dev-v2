@@ -12,23 +12,26 @@ interface ServerlessRequestOptions {
     fetchOptions?: RequestInit;
 }
 
-const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestOptions) => {
+const useServerlessRequest = <T>(url: string, opts?: ServerlessRequestOptions) => {
     const [data, setData] = useState<ServerlessResponse<T>>({
         isLoading: true,
     });
 
     // cache serverless function response for 10 days by default
-    const cache = useCache<T>('slf_cache__' + functionName, {
+    const cache = useCache<T>(`FC_${url}`, {
         ttl: opts?.ttl ?? 1000 * 60 * 60 * 24 * 10
     });
 
     const sendRequest = async () => {
-        const url = `${window.location.origin}/.netlify/functions/${functionName}`;
         const response = await fetch(url, opts?.fetchOptions);
-        return await response.json();
+        if (response.ok) {
+            return await response.json()
+        };
+
+        throw new Error(`Fetch failed with status ${response.status}`);
     };
 
-    const checkCache = useCallback(() => {
+    useEffect(() => {
         const cachedData = cache.get();
 
         if (cachedData) {
@@ -41,15 +44,11 @@ const useServerlessRequest = <T>(functionName: string, opts?: ServerlessRequestO
         sendRequest()
             .then(data => {
                 setData({ isLoading: false, data });
-                cache.set(data);
+                requestIdleCallback(() => cache.set(data));
             }).catch(error => {
-                console.error(error);
+                setData({ isLoading: false, error });
             });
-    }, [functionName]);
-
-    useEffect(() => {
-        checkCache();
-    }, [functionName]);
+    }, [url]);
 
     return data;
 };

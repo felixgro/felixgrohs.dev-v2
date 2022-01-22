@@ -1,5 +1,8 @@
 node_modules
 /build
 /*.log
+
 .env
 .netlify
+.DS_Store
+size-plugin.json

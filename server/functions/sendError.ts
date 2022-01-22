@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { sendMail } from './../libs/mailer';
+import { sendMail } from '../libs/mailer';
 import { response } from '../libs/http';
 
 interface ErrorData {
@@ -8,8 +8,9 @@ interface ErrorData {
     stack: string;
 }
 
-export const handler: Handler = async (event, context) => {
-    if (event.httpMethod !== 'POST' || !event.body) return response(400);
+export const handler: Handler = async (evt, ctx) => {
+    if (evt.httpMethod !== 'POST') return response(405);
+    if (!evt.body) return response(400);
 
     const {
         MAILERSEND_TOKEN: token,
@@ -23,9 +24,8 @@ export const handler: Handler = async (event, context) => {
         return response(500, 'Missing environment variables for realtime error reporting.');
     }
 
-    const error: ErrorData = JSON.parse(event.body);
-
-    const subject = `${error.message}`;
+    const error: ErrorData = JSON.parse(evt.body);
+    const subject = error.message;
 
     const text = `
         Error occurred on: ${error.agent}:
