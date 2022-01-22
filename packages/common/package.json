@@ -1,0 +1,14 @@
+{
+	"name": "@felixgrohs/common",
+	"version": "1.0.0",
+	"main": "./build/",
+	"types": "./build/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch"
+	},
+	"devDependencies": {
+		"typescript": "^4.5.5",
+		"tslib": "^2.3.1"
+	}
+}

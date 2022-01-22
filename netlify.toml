@@ -1,15 +1,15 @@
 [build]
-    publish = "build"
-    command = "yarn build && cd server && yarn"
+    publish = "packages/client/build"
+    command = "yarn build"
 
 [dev]
-    publish = "src"
-    command = "yarn dev"
+    src = "packages/client/src"
+    command = "yarn dev:plain"
     targetPort = 8080
     framework = "#custom" 
 
 [functions]
-    directory = "server/functions"
+    directory = "packages/server/functions"
 
 [[headers]]
     for = "/*"

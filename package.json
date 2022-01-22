@@ -1,56 +1,16 @@
 {
-	"name": "felixgrohs.dev",
-	"version": "0.0.1",
+	"name": "felixgrohs",
 	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
-		"dev:netlify": "netlify dev",
-		"dev": "preact watch",
-		"build": "preact build",
-		"serve": "sirv build --port 8080 --cors --single",
-		"lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-		"test": "jest ./tests"
-	},
-	"dependencies": {
-		"preact": "^10.3.1",
-		"preact-render-to-string": "^5.1.4",
-		"preact-router": "^3.2.1",
-		"use-debounce-preact": "^1.0.2"
+		"build": "lerna run build",
+		"dev:plain": "cd packages/client && yarn dev:plain",
+		"dev": "netlify dev"
 	},
 	"devDependencies": {
-		"@netlify/functions": "^0.10.0",
-		"@types/enzyme": "^3.10.5",
-		"@types/jest": "^26.0.8",
-		"@typescript-eslint/eslint-plugin": "^2.25.0",
-		"@typescript-eslint/parser": "^2.25.0",
-		"enzyme": "^3.11.0",
-		"enzyme-adapter-preact-pure": "^3.1.0",
-		"eslint": "^6.8.0",
-		"eslint-config-preact": "^1.1.1",
-		"jest": "^27.2.5",
-		"jest-preset-preact": "^4.0.2",
-		"netlify-cli": "^8.6.15",
-		"preact-cli": "^3.0.0",
-		"sirv-cli": "^1.0.0-next.3",
-		"typescript": "^4.5.2"
-	},
-	"eslintConfig": {
-		"parser": "@typescript-eslint/parser",
-		"extends": [
-			"preact",
-			"plugin:@typescript-eslint/recommended"
-		],
-		"ignorePatterns": [
-			"build/"
-		]
-	},
-	"jest": {
-		"preset": "jest-preset-preact",
-		"moduleNameMapper": {
-			"^@/(.*)$": "<rootDir>/src/$1"
-		},
-		"setupFiles": [
-			"<rootDir>/tests/mocks/browserMocks.ts",
-			"<rootDir>/tests/mocks/setupTests.ts"
-		]
+		"lerna": "^4.0.0",
+		"netlify-cli": "^8.13.0"
 	}
 }

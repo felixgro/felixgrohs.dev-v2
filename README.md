@@ -6,29 +6,18 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 
 ## Improvements 🚀
 - Pre-render components at build time for better SEO, faster FCP and support for disabled JS
-- Serverless function for fetching projects directly from a github profile
+- Serverless functions for fetching projects directly from a github profile as well as realtime error reporting
 - Client-side caching to minimize serverless requests
-- Realtime error notifications via email
 - Improved animation performance
-- PWA support
+- Monorepo architecture
 
 ## Project Structure
-| Directory | Alias | Description |
-| :----- | :----- | :----- |
-| `netlify/`||serverless node.js functions|
-| &nbsp; `functions/`||lambda functions|
-| &nbsp; `helpers/`||helper functions|
-| &nbsp; `libs/`||dependency modules|
-| `src/`|`@/`|frontend files|
-| &nbsp; `assets/`||static assets|
-| &nbsp; `hooks/`||custom hooks|
-| &nbsp; `styles/`||global css styles|
-| &nbsp; `utils/`||utility functions & polyfills|
-| &nbsp; `components/`||functional components & css modules|
-| &nbsp; &nbsp; `main/`||layout components|
-| &nbsp; &nbsp; `shared/`||reusable components|
-| &nbsp; &nbsp; `async/`||asynchronous components (requested as external bundle after initial load)|
-| `tests/` ||unit tests & mocks|
+| Directory |Description |
+| :----- | :----- |
+| `packages/`|core application packages |
+| &nbsp; &nbsp; `server/`| lambda serverless functions |
+| &nbsp; &nbsp; `client/`| preact frontend |
+| &nbsp; &nbsp; `common/`| shared logic and types |
 
 ## Development
 
@@ -41,20 +30,20 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 Start by cloning this repository:
 ```bash
 git clone https://github.com/felixgro/felixgrohs.dev-v2.git
+cd felixgrohs.dev-v2
 ```
-Install all dependencies using your package manager of choice:
+Install & build all dependencies:
 ```bash
-npm i
-# or
 yarn
+yarn build
 ```
 
 Boot up a local development server:
 ```bash
-npm run dev     # only frontend, no serverless functions
+npm run dev:plain     # only frontend, no serverless functions
 ```
 
-### Serverless Functions
+### With Serverless Functions
 Clone and rename `.env.example` to `.env`:
 ```bash
 cp .env.example .env
@@ -66,7 +55,7 @@ GITHUB_TOKEN=YOUR_GITHUB_API_TOKEN
 GITHUB_USER=YOUR_GITHUB_USERNAME
 ```
 
-\[Optionally\] Setup realtime error reporting using Mailersend by including your token along with your desired sending/receiving email address in the `.env` file:
+\[Optional\] Setup realtime error reporting using Mailersend by including your token along with your desired sending/receiving email address in the `.env` file:
 ```
 MAILERSEND_TOKEN=mailersend_token
 MAILERSEND_FROM=error@example.com
@@ -77,14 +66,14 @@ MAILERSEND_TO_NAME=Joe
 
 Boot up a local development server along with all serverless functions:
 ```bash
-npm run dev:netlify
+npm run dev
 ```
 
 ### All CLI Commands
 | Command | Description |
 | :----- | :----- |
-| `dev`|Run development, HMR server|
-| `dev:netlify`|Run development, HMR server with serverless functions|
+| `dev`|Run development, HMR server & serverless functions|
+| `dev:plain`|Run development, HMR server|
 | `serve`|Run a production-like server|
 | `build`|Create production-ready build|
 | `lint`|Run ESLint|

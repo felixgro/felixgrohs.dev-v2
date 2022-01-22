@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { sendMail } from '../libs/mailer';
-import { response } from '../libs/http';
+import { sendMail } from '../utils/mailer';
+import { response } from '../utils/http';
 
 interface ErrorData {
     message: string;

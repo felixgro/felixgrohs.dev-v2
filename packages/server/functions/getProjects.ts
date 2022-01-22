@@ -1,7 +1,7 @@
+import { ArrayHelper } from '@felixgrohs/common';
 import type { Handler } from '@netlify/functions';
-import { getRepositories, getLanguageStats } from '../libs/github';
-import { response } from '../libs/http';
-import { asyncMap } from '../helpers/array';
+import { getRepositories, getLanguageStats } from '../utils/github';
+import { response } from '../utils/http';
 
 // Get, filter and convert github repositories from specific user
 export const handler: Handler = async (evt, ctx) => {
@@ -9,7 +9,7 @@ export const handler: Handler = async (evt, ctx) => {
 
     const repositories = await getRepositories();
 
-    const projects = await asyncMap(repositories, async (repo) => {
+    const projects = await ArrayHelper.asyncMap(repositories, async (repo) => {
         return {
             name: repo.name,
             id: repo.id,
