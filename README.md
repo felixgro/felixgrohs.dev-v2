@@ -15,9 +15,10 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 | Directory |Description |
 | :----- | :----- |
 | `packages/`|core application packages |
-| &nbsp; &nbsp; `server/`| lambda serverless functions |
 | &nbsp; &nbsp; `client/`| preact frontend |
+| &nbsp; &nbsp; `server/`| serverless functions |
 | &nbsp; &nbsp; `common/`| shared logic and types |
+| &nbsp; &nbsp; `scripts/`| workflow scripts & githooks |
 
 ## Development
 
@@ -50,17 +51,17 @@ cp .env.example .env
 
 Add your Github username and API token to the freshly cloned `.env` file:
 ```
-GITHUB_TOKEN=your_token
-GITHUB_USER=your_username
+GITHUB_TOKEN=xyz
+GITHUB_USER=felixgro
 ```
 
 \[Optional\] Setup realtime error reporting using Mailersend by including your token along with your desired sending/receiving email address in the `.env` file:
 ```
-MAILERSEND_TOKEN=your_token
+MAILERSEND_TOKEN=xyz
 MAILERSEND_FROM=sending@example.com
-MAILERSEND_FROM_NAME=Error Reporter
+MAILERSEND_FROM_NAME=Error-Reporter
 MAILERSEND_TO=receiving@example.com
-MAILERSEND_TO_NAME=Joe Sample
+MAILERSEND_TO_NAME=Your Name
 ```
 
 Boot up a local development server with all serverless functions:
