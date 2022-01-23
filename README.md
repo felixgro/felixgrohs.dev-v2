@@ -34,7 +34,7 @@ cd felixgrohs.dev-v2
 ```
 Install & build all dependencies:
 ```bash
-yarn && yarn build
+yarn
 ```
 
 Boot up a local development server:
