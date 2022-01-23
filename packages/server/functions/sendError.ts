@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { sendMail } from '../utils/mailer';
+import { sendMail } from '../utils/email';
 import { response } from '../utils/http';
 
 interface ErrorData {
