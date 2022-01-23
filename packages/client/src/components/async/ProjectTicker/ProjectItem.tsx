@@ -1,17 +1,6 @@
+import type { Project } from '@felixgrohs/common/src/types/Github';
 import { FunctionalComponent, h } from 'preact';
 import style from './style.css';
-
-export interface Project {
-	id: number;
-	name: string;
-	description: string;
-	url: string;
-	clone: string;
-	homepage: string;
-	languages: { name: string; val: number }[];
-	stars: number;
-	size: number;
-}
 
 export type ProjectClickHandler = (project: Project, el: HTMLElement) => void;
 

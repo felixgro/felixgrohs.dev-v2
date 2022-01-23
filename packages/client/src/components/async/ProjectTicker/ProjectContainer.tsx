@@ -1,5 +1,6 @@
+import type { Project } from '@felixgrohs/common/src/types/Github';
 import { h, FunctionalComponent } from 'preact';
-import ProjectItem, { Project, ProjectClickHandler } from './ProjectItem';
+import ProjectItem, { ProjectClickHandler } from './ProjectItem';
 import style from './style.css';
 
 interface ProjectContainerProps {

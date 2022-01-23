@@ -1,5 +1,6 @@
-import { ArrayHelper } from '@felixgrohs/common';
 import type { Handler } from '@netlify/functions';
+import type { Project } from '@felixgrohs/common/src/types/Github';
+import { ArrayHelper } from '@felixgrohs/common';
 import { getRepositories, getLanguageStats } from '../utils/github';
 import { response } from '../utils/http';
 
@@ -9,7 +10,7 @@ export const handler: Handler = async (evt, ctx) => {
 
     const repositories = await getRepositories();
 
-    const projects = await ArrayHelper.asyncMap(repositories, async (repo) => {
+    const projects: Project[] = await ArrayHelper.asyncMap(repositories, async (repo) => {
         return {
             name: repo.name,
             id: repo.id,
@@ -18,6 +19,7 @@ export const handler: Handler = async (evt, ctx) => {
             url: repo.html_url,
             clone: repo.clone_url,
             homepage: repo.homepage,
+            size: repo.size,
             languages: await getLanguageStats(repo),
         };
     });

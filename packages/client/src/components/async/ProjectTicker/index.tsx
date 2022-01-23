@@ -1,8 +1,8 @@
+import type { Project } from '@felixgrohs/common/src/types/Github';
 import { h, FunctionalComponent, Fragment } from 'preact';
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import useAnimationFrame from '@/hooks/useAnimationFrame';
 import useStepAnimation from '@/hooks/useStepAnimation';
-import type { Project } from './ProjectItem';
 import ProjectDialog from '../ProjectDialog';
 import ProjectContainer from './ProjectContainer';
 import TabFocusTarget from '@/components/shared/FocusTarget';

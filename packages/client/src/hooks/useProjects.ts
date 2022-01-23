@@ -1,6 +1,7 @@
-import type { Project } from '@/components/async/ProjectTicker/ProjectItem';
+import type { Project } from '@felixgrohs/common/src/types/Github';
 import { useMemo } from 'preact/hooks';
 import useFetch from '@/hooks/useFetch';
+
 
 const useProjects = () => {
     const response = useFetch<Project[]>('/api/getProjects');
