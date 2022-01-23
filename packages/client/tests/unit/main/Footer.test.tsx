@@ -7,8 +7,4 @@ describe('Footer', () => {
 		const wrapper = shallow(<Footer />);
 		expect(wrapper.isEmptyRender()).toBe(false);
 	});
-
-	test('should fail', () => {
-		expect(1).toBe(2);
-	});
 });
