@@ -5,7 +5,6 @@
 		"packages/*"
 	],
 	"scripts": {
-		"postinstall": "yarn build",
 		"build": "lerna run build",
 		"dev:plain": "cd packages/client && yarn dev:plain",
 		"dev": "netlify dev",
