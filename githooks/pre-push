@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+const { exec } = require('child_process');
+const { exit } = require('process');
+
+const log = (...args) => console.log('[pre-push] ', ...args);
+
+exec('yarn test', (error) => {
+	if (error) {
+		log('Test suite failed');
+		log(error.message);
+		exit(1);
+	}
+
+	log('Test suite passed');
+	exit(0);
+});
