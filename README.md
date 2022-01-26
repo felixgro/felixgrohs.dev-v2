@@ -6,8 +6,8 @@ Rebuilding my [old personal website](https://github.com/felixgro/felixgrohs.dev)
 
 ## Improvements 🚀
 - Pre-render components at build time for better SEO, faster FCP and support for disabled JS
-- Serverless functions for fetching projects directly from a github profile as well as realtime error reporting
-- Client-side caching to minimize serverless requests
+- Serverless functions for fetching projects directly from a github profile & realtime error reporting
+- Client-side caching to minimize network traffic
 - Improved animation performance
 - Monorepo architecture
 
@@ -72,7 +72,7 @@ yarn dev
 ### All CLI Commands
 | Command | Description |
 | :----- | :----- |
-| `dev`|Run development, HMR server & serverless functions|
+| `dev`|Run development, HMR server & netlify functions|
 | `dev:plain`|Run development, HMR server|
 | `serve`|Run a production-like server|
 | `build`|Create production-ready build|
